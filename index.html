@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>南春希 Nan Chunxi | CMF & Interaction Portfolio</title>
+  <style>
+    :root{
+      --bg:#f6f4ef; --ink:#101010; --muted:#76716a; --line:#101010; --red:#e40035;
+      --cream:#fffdf7; --dark:#0c0c0c; --soft:#e9e4dc; --green:#83926a; --blue:#2b5cff;
+      --shadow: 14px 14px 0 rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,'PingFang SC','Microsoft YaHei',sans-serif;}
+    a{color:inherit;text-decoration:none} img{max-width:100%;display:block}.mono{font-family:'Courier New',monospace}.serif{font-family:Georgia,'Times New Roman',serif}
+    .grain:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");mix-blend-mode:multiply;opacity:.18}
+    header{position:fixed;top:0;left:0;right:0;z-index:50;height:58px;border-bottom:1.5px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:rgba(246,244,239,.82);backdrop-filter:blur(14px)}
+    .brand{font-weight:800;letter-spacing:-.03em}.nav{display:flex;gap:24px;font-size:12px;text-transform:uppercase}.nav a:hover{color:var(--red)}
+    .hero{min-height:100vh;padding:92px 26px 42px;display:grid;grid-template-columns:1.05fr 1.45fr;gap:42px;align-items:center;border-bottom:1.5px solid var(--line);position:relative;overflow:hidden}
+    .kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+    h1{font-size:clamp(56px,8vw,130px);line-height:.86;margin:18px 0 16px;letter-spacing:-.08em}.cn{font-size:clamp(38px,5vw,86px);font-weight:900;letter-spacing:-.05em;margin:0}.role{display:inline-block;background:var(--ink);color:#fff;padding:8px 12px;margin:14px 0 26px;font-weight:800;font-size:14px}.intro{font-size:17px;line-height:1.72;max-width:560px}.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.btn{border:1.5px solid var(--ink);padding:12px 16px;border-radius:999px;background:var(--cream);font-weight:800;font-size:13px}.btn.primary{background:var(--red);color:#fff;border-color:var(--red)}
+    .collage{height:620px;position:relative}.card{position:absolute;background:var(--cream);border:1.5px solid var(--ink);box-shadow:var(--shadow);overflow:hidden;transition:.25s}.card:hover{transform:translateY(-8px) rotate(0deg)!important;z-index:20}.card .ph{height:100%;display:grid;place-items:center;text-align:center;padding:22px;background:linear-gradient(135deg,#151515,#4c1118);color:#fff}.card .ph.light{background:linear-gradient(135deg,#fafafa,#c7c1b5);color:#111}.card .ph.green{background:linear-gradient(135deg,#1b2a21,#94a56c);color:#fff}.card .ph.blue{background:linear-gradient(135deg,#092140,#2b5cff);color:#fff}.card small{display:block;font-size:10px;letter-spacing:.14em;opacity:.72}.card b{font-size:20px;line-height:1.1}.c1{width:330px;height:210px;top:18px;left:120px;transform:rotate(-4deg)}.c2{width:230px;height:260px;top:112px;right:30px;transform:rotate(5deg)}.c3{width:280px;height:170px;top:310px;left:20px;transform:rotate(3deg)}.c4{width:350px;height:220px;bottom:18px;left:245px;transform:rotate(-2deg)}.c5{width:220px;height:150px;bottom:120px;right:15px;transform:rotate(4deg)}
+    section{padding:86px 26px;border-bottom:1.5px solid var(--line)}.wrap{max-width:1180px;margin:0 auto}.section-title{display:flex;justify-content:space-between;align-items:end;border-bottom:1.5px solid var(--line);padding-bottom:16px;margin-bottom:30px}.section-title h2{font-size:46px;letter-spacing:-.06em;margin:0}.section-title span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.16em}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}.panel{background:var(--cream);border:1.5px solid var(--ink);padding:24px;box-shadow:8px 8px 0 rgba(0,0,0,.08)}.panel h3{margin:0 0 12px;font-size:22px}.panel p,.panel li{line-height:1.7;color:#333}.tag{display:inline-block;border:1px solid var(--ink);padding:5px 8px;border-radius:999px;font-size:12px;margin:5px 4px 0 0;background:#fff}.timeline{display:grid;gap:18px}.item{display:grid;grid-template-columns:220px 1fr;gap:24px;border-top:1px solid #c9c1b6;padding-top:18px}.item h3{margin:0 0 6px;font-size:22px}.item ul{margin:8px 0 0;padding-left:18px}.item li{margin:6px 0;line-height:1.65}.date{font-weight:800;color:var(--red)}
+    .projects{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.project{min-height:360px;background:var(--cream);border:1.5px solid var(--ink);display:flex;flex-direction:column}.thumb{height:210px;display:grid;place-items:center;padding:22px;text-align:center;background:var(--dark);color:#fff}.project:nth-child(2) .thumb{background:var(--green)}.project:nth-child(3) .thumb{background:var(--blue)}.project:nth-child(4) .thumb{background:#d8d1c5;color:#111}.project:nth-child(5) .thumb{background:#111}.project:nth-child(6) .thumb{background:#ede8df;color:#111}.project-body{padding:18px}.project h3{margin:0 0 8px;font-size:20px}.project p{font-size:14px;line-height:1.6;color:#444}.contact{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:end}.bigmail{font-size:clamp(36px,6vw,92px);font-weight:900;letter-spacing:-.07em;line-height:.9}.footer{padding:28px 26px;display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+    @media(max-width:900px){header{padding:0 16px}.nav{gap:12px}.hero{grid-template-columns:1fr;padding:86px 16px 34px}.collage{height:520px}.c1{left:15px}.c2{right:5px}.c4{left:70px}.grid2,.contact{grid-template-columns:1fr}.projects{grid-template-columns:1fr}.item{grid-template-columns:1fr}.section-title h2{font-size:34px}}
+  </style>
+</head>
+<body class="grain">
+  <header>
+    <a class="brand" href="#top">Nan Chunxi</a>
+    <nav class="nav mono"><a href="#about">About</a><a href="#experience">Experience</a><a href="#works">Works</a><a href="#contact">Contact</a></nav>
+  </header>
+  <main id="top">
+    <section class="hero">
+      <div>
+        <div class="kicker mono">CMF Digital Research / Portfolio 2026</div>
+        <p class="cn">南春希</p><h1 class="serif">Nan<br>Chunxi</h1>
+        <div class="role">CMF DESIGN / INTERACTION DESIGN</div>
+        <p class="intro">以 CMF 数字化研究为核心，关注颜色一致性、数字材质复现、用户感知与交互展示。作品集将研究方法、视觉设计、包装/IP、AR Demo 与三维动态内容整合为一个可浏览的个人档案。</p>
+        <div class="cta"><a class="btn primary" href="#works">View Portfolio</a><a class="btn" href="南春希简历.pdf" target="_blank">Download Resume</a></div>
+      </div>
+      <div class="collage" aria-label="portfolio collage">
+        <a class="card c1" href="#works"><div class="ph"><small>#01 CMF RESEARCH</small><b>Color Consistency<br>Material Reproduction</b></div></a>
+        <a class="card c2" href="#works"><div class="ph green"><small>#02 APPLIANCE CMF</small><b>Kitchen Product<br>Color Strategy</b></div></a>
+        <a class="card c3" href="#works"><div class="ph light"><small>#03 PACKAGING</small><b>Brand Visual<br>& Package</b></div></a>
+        <a class="card c4" href="#works"><div class="ph blue"><small>#04 AR DEMO</small><b>Kivicube Interactive<br>Presentation</b></div></a>
+        <a class="card c5" href="#works"><div class="ph"><small>#05 MOTION / 3D</small><b>Digital Media</b></div></a>
+      </div>
+    </section>
+    <section id="about"><div class="wrap"><div class="section-title"><h2>About / Resume</h2><span>profile</span></div><div class="grid2"><div class="panel"><h3>定位</h3><p>江南大学数字媒体艺术设计硕士，方向为 CMF 设计与交互设计。当前重点放在 3C / 家电类产品的 CMF 数字化、色彩管理、感性工学与可视化表达。</p></div><div class="panel"><h3>工具与能力</h3><span class="tag">Blender</span><span class="tag">Figma</span><span class="tag">Adobe PS / AI / AE</span><span class="tag">AIGC</span><span class="tag">Kivicube</span><span class="tag">MATLAB</span><span class="tag">校色仪</span><span class="tag">分光光度仪</span><span class="tag">照度计</span></div></div></div></section>
+    <section id="experience"><div class="wrap"><div class="section-title"><h2>Experience</h2><span>selected path</span></div><div class="timeline"><article class="item"><div><div class="date">2025.03 — 2026.03</div><div class="mono">Jiangnan University</div></div><div><h3>CMF研究员｜CMF数字化研究创新实验室</h3><ul><li>研究跨媒介颜色一致性与数字材质复现，构建屏幕端与实物端颜色匹配流程。</li><li>使用校色仪、分光光度仪、照度计进行颜色测量、环境控制与量化评估。</li><li>输出颜色校正策略，支撑 CMF 趋势分析、数字模拟与实物验证。</li></ul></div></article><article class="item"><div><div class="date">2025.04 — 2025.07</div><div class="mono">Jinying Printing</div></div><div><h3>交互设计师｜金鹰（福建）印刷有限公司</h3><ul><li>参与品牌视觉、包装设计、IP设计与提案策划。</li><li>对接客户需求，完成视觉物料与包装方案输出。</li><li>基于 Kivicube 搭建 AR Demo，用于项目展示与体验验证。</li></ul></div></article><article class="item"><div><div class="date">2023.12 — 2024.02</div><div class="mono">Light Shadow Creative</div></div><div><h3>交互媒体设计师｜北京光影冉动创意科技有限公司</h3><ul><li>参与数字展示项目，负责 UI 视觉、交互动效、三维建模与动画内容制作。</li><li>完成三维模型搭建、场景渲染及方案展示优化。</li></ul></div></article></div></div></section>
+    <section id="works"><div class="wrap"><div class="section-title"><h2>Works</h2><span>portfolio structure</span></div><div class="projects"><article class="project"><div class="thumb"><b>CMF数字化研究</b></div><div class="project-body"><h3>跨媒介颜色一致性</h3><p>放实验流程、设备照片、色彩测量、屏幕/实物对比、校正策略与结论。</p></div></article><article class="project"><div class="thumb"><b>厨房家电CMF</b></div><div class="project-body"><h3>用户感知映射</h3><p>放 L/C/H 色彩变量、问卷实验、Z-score、ANOVA、六个感知词结论。</p></div></article><article class="project"><div class="thumb"><b>包装 / IP / AR</b></div><div class="project-body"><h3>商业设计执行</h3><p>放包装视觉、IP延展、Kivicube AR Demo流程与客户提案页。</p></div></article><article class="project"><div class="thumb"><b>交互媒体</b></div><div class="project-body"><h3>UI / 动效 / 三维</h3><p>放界面、动效分镜、三维场景、渲染输出和展示方案。</p></div></article><article class="project"><div class="thumb"><b>竞赛作品</b></div><div class="project-body"><h3>视觉与数字艺术</h3><p>放米兰设计周、未来设计师、计算机设计大赛等获奖项目。</p></div></article><article class="project"><div class="thumb"><b>Sketchbook</b></div><div class="project-body"><h3>手绘 / 手工 / 过程</h3><p>放草图、材料尝试、色彩板、模型过程，提升网站个人辨识度。</p></div></article></div></div></section>
+    <section id="contact"><div class="wrap contact"><div><div class="section-title"><h2>Contact</h2><span>open to cmf internship</span></div><p class="intro">目标岗位：3C电子 / 家电方向 CMF设计、CMF研究、设计策略与数字化展示相关岗位。</p></div><div><div class="bigmail">patlia369<br>@outlook.com</div><p class="mono">WeChat: Earthide / Tel: 16670961183</p></div></div></section>
+  </main>
+  <footer class="footer mono"><span>© 2026 Nan Chunxi</span><span>CMF DESIGN / INTERACTION DESIGN</span></footer>
+</body>
+</html>
