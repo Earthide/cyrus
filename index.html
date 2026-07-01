@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>南春希 | Desktop Portfolio</title>
+  <meta name="description" content="南春希 CMF设计 / 交互设计桌面式作品集。">
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body class="desktop-page">
+  <header class="desktop-bar">
+    <button class="brand desktop-nav-button" type="button" data-scroll="home">NAN CHUNXI</button>
+    <div class="language-switch" aria-label="Language">
+      <span>EN</span>
+      <span>中文</span>
+    </div>
+    <nav aria-label="主导航">
+      <button type="button" data-scroll="works">作品</button>
+      <button type="button" data-scroll="playground">尝试</button>
+      <button type="button" data-scroll="contact-section">联系</button>
+      <a href="./about.html">关于</a>
+    </nav>
+  </header>
+
+  <main class="desktop-stage" id="home" aria-label="电脑桌面作品集">
+    <div class="hero-window" aria-hidden="true">
+      <div class="mac-controls">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <div class="desktop-bg" aria-hidden="true"></div>
+    <svg class="connection-lines" aria-hidden="true"></svg>
+
+    <img class="decor-layer decor-receipt-top" src="./assets/images/desktop/decor/receipt-top-left.png" alt="">
+    <img class="decor-layer decor-pixel-cloud" src="./assets/images/desktop/decor/pixel-cloud.png" alt="">
+    <img class="decor-layer decor-folder-top" src="./assets/images/desktop/decor/folder-top.png" alt="">
+    <img class="decor-layer decor-note-ring" src="./assets/images/desktop/decor/note-ring-right.png" alt="">
+    <img class="decor-layer decor-note-heart" src="./assets/images/desktop/decor/note-heart-bottom.png" alt="">
+    <img class="decor-layer decor-folder-bottom" src="./assets/images/desktop/decor/folder-bottom.png" alt="">
+
+    <button class="desktop-layer layer-window-left" type="button" data-draggable aria-label="拖动作品窗口素材">
+      <span class="asset-slot"><img src="./assets/images/desktop/placeholders/project-window.png" alt=""></span>
+      <img class="asset-frame" src="./assets/images/desktop/window-left.png" alt="">
+    </button>
+    <button class="desktop-layer layer-window-top" type="button" data-draggable aria-label="拖动右上窗口素材">
+      <span class="asset-slot"><img src="./assets/images/desktop/placeholders/about-window.png" alt=""></span>
+      <img class="asset-frame" src="./assets/images/desktop/window-top-right.png" alt="">
+    </button>
+    <button class="desktop-layer layer-paper" type="button" data-draggable aria-label="拖动纸片素材">
+      <img src="./assets/images/desktop/paper-orbit.png" alt="">
+    </button>
+    <button class="desktop-layer layer-window-mid" type="button" data-draggable aria-label="拖动右侧窗口素材">
+      <span class="asset-slot"><img src="./assets/images/desktop/placeholders/contact-window.png" alt=""></span>
+      <img class="asset-frame" src="./assets/images/desktop/window-mid-right.png" alt="">
+    </button>
+    <button class="desktop-layer layer-trash" type="button" data-draggable aria-label="拖动垃圾桶素材">
+      <img src="./assets/images/desktop/trash.png" alt="">
+    </button>
+    <button class="desktop-layer layer-photo-left" type="button" data-draggable aria-label="拖动左下照片素材">
+      <span class="asset-slot"><img src="./assets/images/desktop/placeholders/photo-left.png" alt=""></span>
+      <img class="asset-frame" src="./assets/images/desktop/photo-bottom-left.png" alt="">
+    </button>
+    <button class="desktop-layer layer-photo-right" type="button" data-draggable aria-label="拖动右下照片素材">
+      <span class="asset-slot"><img src="./assets/images/desktop/placeholders/photo-right.png" alt=""></span>
+      <img class="asset-frame" src="./assets/images/desktop/photo-bottom-right.png" alt="">
+    </button>
+
+    <img class="portfolio-logo-layer" data-portfolio-logo src="./assets/images/desktop/portfolio-logo.png" alt="Portfolio">
+
+    <section class="desktop-window" data-panel="about" aria-label="关于南春希窗口">
+      <div class="window-titlebar"><strong>ABOUT.EXE</strong><div><button type="button" data-minimize>_</button><button type="button" data-close>×</button></div></div>
+      <div class="window-content about-window">
+        <h1>南春希 <small>Chunxi Nan</small></h1>
+        <p class="role">CMF设计 / 交互设计</p>
+        <div class="contact-line"><span>电话：16670961183</span><span>微信：Earthide</span><span>出生：2002.3.11</span></div>
+        <h2>自我评价</h2>
+        <p>本人情绪稳定，具备良好的学习能力、动手能力和创新意识，善于思考，能独立完成分配的任务，具备良好的沟通表达、协调能力和团队合作意识，善于听取他人意见。</p>
+      </div>
+    </section>
+
+    <section class="desktop-window" data-panel="projects" aria-label="作品窗口">
+      <div class="window-titlebar"><strong>PROJECTS.FOLDER</strong><div><button type="button" data-minimize>_</button><button type="button" data-close>×</button></div></div>
+      <div class="window-content">
+        <h2>作品集</h2>
+        <p>作品集素材以桌面图标形式浮在主视觉原位，窗口、照片、纸片和垃圾桶均为独立图片层，可替换为新的项目封面或入口。</p>
+        <div class="file-grid">
+          <a href="./resume.pdf">作品集 PDF</a>
+          <button type="button" data-open="resume">简历文件</button>
+          <button type="button" data-open="contact">联系方式</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="desktop-window resume-window" data-panel="resume" aria-label="简历窗口">
+      <div class="window-titlebar"><strong>RESUME.TXT</strong><div><button type="button" data-minimize>_</button><button type="button" data-close>×</button></div></div>
+      <div class="window-content resume-scroll">
+        <h2>教育背景 <small>EDUCATION</small></h2>
+        <article><h3>江南大学</h3><time>2024-2027 硕士</time><p>数字媒体艺术设计</p><p>主修课程：CMF设计、设计心理学与用户研究、虚拟交互理论与实践、品牌策划设计</p></article>
+        <article><h3>北京工业大学</h3><time>2020-2024 本科</time><p>数字媒体艺术设计</p><p>主修课程：数字建模、UI设计、动态画面设计、三维动画、数字媒体技术等</p></article>
+        <h2>专业技能 <small>PROFESSIONAL</small></h2>
+        <ul><li>CET-6</li><li>Blender</li><li>Figma</li><li>Adobe（PS/AI/AE等）</li><li>AIGC等</li><li>其他：手绘（纸绘/板绘）、剪辑</li></ul>
+        <h2>荣誉经历 <small>AWARDS</small></h2>
+        <p>2025年米兰设计周中国高校设计学科优秀作品展全国决赛　一等奖</p>
+        <p>2025年未来设计师·全国高校数字艺术设计大赛江苏省　二等奖</p>
+        <p>2023年未来设计师·全国高校数字艺术设计大赛北京市　二、三等奖</p>
+        <p>2023年第16届中国大学生计算机设计大赛北京市　三等奖</p>
+        <p>2023年时报金犊奖旺旺集团IP周边商品设计奖　优秀奖</p>
+        <p>2023年时报金犊奖浩天装-最佳美术设计平面奖　优秀奖</p>
+        <p>2020-2024年北京工业大学全学年　校学习优秀奖</p>
+        <h2>相关经历 <small>EXPERIENCE</small></h2>
+        <article><h3>CMF研究员</h3><time>江南大学CMF数字化研究创新实验室　2025.03-2026.03</time><ol><li>负责领域：跨媒介颜色一致性与对色方法研究、数字材质表现</li><li>工作事项：构建数字化颜色模拟流程，实现屏幕端与实物端颜色匹配；设计对比实验，分析光源与材质对颜色表现的影响；输出颜色校正策略，指导实验样本颜色一致性。</li><li>具备业务能力：熟悉颜色仪、分光光度仪，明度计等设备进行颜色测量与环境控制，掌握颜色趋势分析、数字模拟与实验验证与量化评估的完整流程，具备跨材料介质色管理能力。</li></ol></article>
+        <article><h3>交互设计师</h3><time>金鹰（福建）印刷有限公司　2025.04-2025.07</time><ol><li>负责领域：策划、平面设计、包装设计、IP设计、AR Demo制作（Kivicube）</li><li>工作事项：参与品牌视觉与包装设计项目，对接客户需求并完成设计方案输出；协助进行包装视觉策划，视觉物料设计及IP形象延展；基于Kivicube平台完成AR交互Demo搭建与展示验证。</li><li>具备业务能力：具备品牌视觉设计与包装设计能力，熟悉从需求沟通、方案策划到设计提案的项目流程；能够高效协同客户、设计及制作团队推进项目实施。</li></ol></article>
+        <article><h3>交互媒体设计师</h3><time>北京光影冉动创意科技有限公司　2023.12-2024.02</time><ol><li>负责领域：策划、UI设计、交互动效设计、三维建模、数字动画制作</li><li>工作事项：参与数字展示项目设计，负责界面视觉设计与交互动效制作；完成三维模型搭建、场景渲染及动画内容输出，协助项目方案展示与视觉呈现优化。</li><li>具备业务能力：熟练运用数字化设计工具实现从视觉设计到动态呈现的全流程制作；具备三维空间理解、数字内容表达及跨团队协作能力。</li></ol></article>
+      </div>
+    </section>
+
+    <section class="desktop-window contact-window" data-panel="contact" aria-label="联系方式窗口">
+      <div class="window-titlebar"><strong>CONTACT.DLL</strong><div><button type="button" data-minimize>_</button><button type="button" data-close>×</button></div></div>
+      <div class="window-content">
+        <h2>联系方式</h2>
+        <p>电话：16670961183</p>
+        <p>微信：Earthide</p>
+        <a class="xp-button" href="./resume.pdf">打开 PDF 简历</a>
+      </div>
+    </section>
+
+    <section class="desktop-window trash-window" data-panel="trash" aria-label="垃圾桶窗口">
+      <div class="window-titlebar"><strong>RECYCLE.BIN</strong><div><button type="button" data-minimize>_</button><button type="button" data-close>×</button></div></div>
+      <div class="window-content">
+        <h2>垃圾桶素材</h2>
+        <p>这个垃圾桶已经从主视觉中独立成可替换 PNG 图层，当前仍放在原位置。</p>
+      </div>
+    </section>
+  </main>
+
+  <section class="content-section works-section" id="works" aria-label="作品">
+    <div class="section-inner">
+      <p class="section-kicker">WORKS</p>
+      <h2>作品集</h2>
+      <p>作品集素材以桌面图标形式浮在主视觉原位，窗口、照片、纸片和垃圾桶均为独立图片层，可替换为新的项目封面或入口。</p>
+      <div class="project-strip">
+        <article><span>01</span><h3>CMF设计</h3><p>跨媒介颜色一致性与对色方法研究、数字材质表现。</p></article>
+        <article><span>02</span><h3>交互设计</h3><p>UI设计、交互动效设计、AR Demo制作、数字展示项目设计。</p></article>
+        <article><span>03</span><h3>品牌与包装</h3><p>品牌视觉与包装设计、IP形象延展、视觉物料设计。</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section playground-section" id="playground" aria-label="尝试">
+    <div class="section-inner split-section">
+      <div>
+        <p class="section-kicker">TRY</p>
+        <h2>尝试</h2>
+      </div>
+      <div>
+        <p>跨媒介颜色一致性与对色方法研究、数字材质表现、UI设计、交互动效设计、AR Demo制作、三维建模、数字动画制作。</p>
+        <div class="project-strip compact-strip">
+          <article><span>CMF</span><h3>颜色与材质</h3><p>颜色测量、环境控制、颜色趋势分析、数字模拟与实验验证。</p></article>
+          <article><span>UI</span><h3>交互与动效</h3><p>界面视觉设计、交互动效设计、数字展示项目设计。</p></article>
+          <article><span>3D</span><h3>三维与动画</h3><p>三维模型搭建、场景渲染及动画内容输出。</p></article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section contact-section" id="contact-section" aria-label="联系方式">
+    <div class="section-inner split-section">
+      <div>
+        <p class="section-kicker">CONTACT</p>
+        <h2>联系方式</h2>
+      </div>
+      <div class="contact-card">
+        <p>电话：16670961183</p>
+        <p>微信：Earthide</p>
+        <a class="xp-button" href="./resume.pdf">打开 PDF 简历</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section resume-section" id="resume-section" aria-label="简历">
+    <div class="section-inner">
+      <p class="section-kicker">RESUME</p>
+      <h2>教育背景 / 荣誉经历 / 相关经历</h2>
+      <div class="resume-grid">
+        <article><h3>江南大学</h3><time>2024-2027 硕士</time><p>数字媒体艺术设计。主修课程：CMF设计、设计心理学与用户研究、虚拟交互理论与实践、品牌策划设计。</p></article>
+        <article><h3>北京工业大学</h3><time>2020-2024 本科</time><p>数字媒体艺术设计。主修课程：数字建模、UI设计、动态画面设计、三维动画、数字媒体技术等。</p></article>
+        <article><h3>专业技能</h3><p>CET-6、Blender、Figma、Adobe（PS/AI/AE等）、AIGC等、手绘（纸绘/板绘）、剪辑。</p></article>
+        <article><h3>相关经历</h3><p>江南大学CMF数字化研究创新实验室、金鹰（福建）印刷有限公司、北京光影冉动创意科技有限公司。</p></article>
+      </div>
+    </div>
+  </section>
+  <script src="./assets/js/main.js"></script>
+</body>
+</html>
