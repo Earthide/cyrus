@@ -3,6 +3,7 @@
   const desktopFrame = document.querySelector('.desktop-bg');
   const draggables = [...document.querySelectorAll('[data-draggable], .desktop-window')];
   const panels = [...document.querySelectorAll('[data-panel]')];
+  const bootScreen = document.querySelector('[data-boot-screen]');
   let topZ = 100;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
   const heroWidth = 1536;
@@ -22,11 +23,11 @@
     'decor-note-ring': [1350, 292, 121, 126],
     'decor-note-heart': [433, 718, 176, 174],
     'decor-folder-bottom': [958, 866, 154, 92],
-    'layer-window-left': [30, 154, 291, 321],
-    'layer-window-top': [1266, 66, 200, 222],
-    'layer-paper': [1351, 292, 121, 126],
+    'layer-window-left': [69, 127, 291, 321],
+    'layer-window-top': [1184, 66, 200, 222],
+    'layer-paper': [1262, 330, 121, 126],
     'layer-window-mid': [1166, 455, 304, 197],
-    'layer-trash': [31, 691, 74, 82],
+    'layer-trash': [894, 807, 86, 94],
     'layer-photo-left': [260, 747, 167, 207],
     'layer-photo-right': [1026, 757, 158, 128],
   };
@@ -47,6 +48,14 @@
       el.style.width = (w * scale) + 'px';
       el.style.height = (h * scale) + 'px';
     });
+
+    const logo = document.querySelector('[data-portfolio-logo]');
+    if (logo) {
+      logo.style.left = (offsetX + heroWidth * scale * .5) + 'px';
+      logo.style.top = (offsetY + heroHeight * scale * .372) + 'px';
+      logo.style.width = (heroWidth * scale * .588) + 'px';
+      logo.style.transform = 'translateX(-50%)';
+    }
 
     const lines = document.querySelector('.connection-lines');
     if (lines) {
@@ -119,6 +128,173 @@
     history.replaceState(null, '', '#' + name);
   }
 
+  if (bootScreen) {
+    const bootPercent = document.querySelector('[data-boot-percent]');
+    const bootWindow = bootScreen.querySelector('.boot-window');
+    const bootStartButton = document.querySelector('[data-boot-start]');
+    const bootLineOne = document.querySelector('[data-boot-line-one]');
+    const bootLineTwo = document.querySelector('[data-boot-line-two]');
+    const bootDuration = 1550;
+    const cameFromInternalDetail = (() => {
+      try {
+        const referrer = new URL(document.referrer);
+        if (referrer.origin !== window.location.origin) return false;
+        return /\/about\.html$/i.test(referrer.pathname) || /\/works\/work-\d+\.html$/i.test(referrer.pathname);
+      } catch (error) {
+        return false;
+      }
+    })();
+    let bootAudio = null;
+    let bootAudioUnlocked = false;
+    let bootStarted = false;
+    let bootStart = 0;
+    const unlockBootAudio = () => {
+      if (bootAudioUnlocked) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      try {
+        bootAudio = bootAudio || new AudioContext();
+        bootAudio.resume();
+        const tick = bootAudio.createOscillator();
+        const gain = bootAudio.createGain();
+        gain.gain.setValueAtTime(0.0001, bootAudio.currentTime);
+        tick.connect(gain);
+        gain.connect(bootAudio.destination);
+        tick.start();
+        tick.stop(bootAudio.currentTime + 0.02);
+        bootAudioUnlocked = true;
+      } catch (error) {}
+    };
+    const playBootChime = () => {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      try {
+        const audio = bootAudio || new AudioContext();
+        if (audio.state === 'suspended') audio.resume();
+        const master = audio.createGain();
+        master.gain.setValueAtTime(0.0001, audio.currentTime);
+        master.gain.exponentialRampToValueAtTime(0.18, audio.currentTime + 0.05);
+        master.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 1.9);
+        master.connect(audio.destination);
+        const notes = [
+          { f: 329.63, t: 0, d: .72, type: 'sine' },
+          { f: 493.88, t: .08, d: .9, type: 'triangle' },
+          { f: 659.25, t: .2, d: .98, type: 'sine' },
+          { f: 987.77, t: .52, d: .88, type: 'triangle' },
+          { f: 1318.51, t: .72, d: .62, type: 'sine' },
+        ];
+        notes.forEach((note) => {
+          const osc = audio.createOscillator();
+          const gain = audio.createGain();
+          osc.type = note.type;
+          osc.frequency.setValueAtTime(note.f, audio.currentTime + note.t);
+          osc.frequency.exponentialRampToValueAtTime(note.f * 1.012, audio.currentTime + note.t + note.d);
+          gain.gain.setValueAtTime(0.0001, audio.currentTime + note.t);
+          gain.gain.exponentialRampToValueAtTime(0.58, audio.currentTime + note.t + 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + note.t + note.d);
+          osc.connect(gain);
+          gain.connect(master);
+          osc.start(audio.currentTime + note.t);
+          osc.stop(audio.currentTime + note.t + note.d + 0.04);
+        });
+        const shimmer = audio.createOscillator();
+        const shimmerGain = audio.createGain();
+        shimmer.type = 'sine';
+        shimmer.frequency.setValueAtTime(1760, audio.currentTime + .72);
+        shimmer.frequency.exponentialRampToValueAtTime(2349.32, audio.currentTime + 1.28);
+        shimmerGain.gain.setValueAtTime(0.0001, audio.currentTime + .72);
+        shimmerGain.gain.exponentialRampToValueAtTime(0.18, audio.currentTime + .82);
+        shimmerGain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 1.55);
+        shimmer.connect(shimmerGain);
+        shimmerGain.connect(master);
+        shimmer.start(audio.currentTime + .72);
+        shimmer.stop(audio.currentTime + 1.62);
+        window.setTimeout(() => {
+          try { if (audio !== bootAudio) audio.close(); } catch (error) {}
+        }, 2200);
+      } catch (error) {}
+    };
+    const shatterBoot = () => {
+      if (!bootWindow) return;
+      const rect = bootWindow.getBoundingClientRect();
+      const colors = ['blue', 'cyan', 'paper', ''];
+      const count = 90;
+      for (let i = 0; i < count; i += 1) {
+        const shard = document.createElement('span');
+        shard.className = 'boot-shard ' + colors[Math.floor(Math.random() * colors.length)];
+        const x = rect.left + Math.random() * rect.width;
+        const y = rect.top + Math.random() * rect.height;
+        const angle = Math.atan2(y - (rect.top + rect.height / 2), x - (rect.left + rect.width / 2));
+        const distance = 90 + Math.random() * 260;
+        shard.style.left = x + 'px';
+        shard.style.top = y + 'px';
+        shard.style.setProperty('--dx', (Math.cos(angle) * distance + (Math.random() - .5) * 80).toFixed(1) + 'px');
+        shard.style.setProperty('--dy', (Math.sin(angle) * distance + (Math.random() - .5) * 90).toFixed(1) + 'px');
+        shard.style.setProperty('--rot', (Math.random() * 360 - 180).toFixed(1) + 'deg');
+        bootScreen.appendChild(shard);
+      }
+    };
+    const updateBootPercent = (now) => {
+      if (!bootPercent || !bootScreen.isConnected) return;
+      const raw = Math.min((now - bootStart) / bootDuration, 1);
+      const eased = raw < .58
+        ? .32 * Math.pow(raw / .58, 2.2)
+        : .32 + .68 * (1 - Math.pow(1 - (raw - .58) / .42, 2.8));
+      bootPercent.textContent = `${Math.min(100, Math.round(eased * 100))}%`;
+      if (raw < 1) requestAnimationFrame(updateBootPercent);
+    };
+    const startBoot = () => {
+      if (bootStarted) return;
+      bootStarted = true;
+      if (bootLineOne) bootLineOne.textContent = 'Cyrus正在醒来...';
+      if (bootLineTwo) bootLineTwo.textContent = '系统对接，一些想法正在接入桌面...';
+      unlockBootAudio();
+      document.body.classList.add('boot-running');
+      bootStart = performance.now();
+      requestAnimationFrame(updateBootPercent);
+      window.setTimeout(() => {
+        playBootChime();
+        shatterBoot();
+        document.body.classList.add('boot-shattering');
+        document.body.classList.remove('is-booting');
+        document.body.classList.add('boot-complete');
+        window.setTimeout(() => {
+          window.setTimeout(() => bootScreen.remove(), 700);
+        }, 360);
+      }, bootDuration);
+    };
+    if (cameFromInternalDetail) {
+      document.body.classList.remove('is-booting');
+      document.body.classList.add('boot-complete');
+      bootScreen.remove();
+    } else {
+      bootStartButton?.addEventListener('click', startBoot);
+    }
+  }
+
+  const languageButtons = [...document.querySelectorAll('[data-lang]')];
+  languageButtons.forEach((button) => {
+    const isChinese = button.dataset.lang === 'zh';
+    button.classList.toggle('is-active', isChinese);
+    button.setAttribute('aria-pressed', String(isChinese));
+  });
+
+  const menuToggle = document.querySelector('[data-menu-toggle]');
+  const closeSiteMenu = () => {
+    document.body.classList.remove('site-menu-open');
+    menuToggle?.setAttribute('aria-expanded', 'false');
+  };
+  menuToggle?.addEventListener('click', () => {
+    const isOpen = document.body.classList.toggle('site-menu-open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.querySelectorAll('.desktop-bar nav a, .desktop-bar nav button').forEach((item) => {
+    item.addEventListener('click', closeSiteMenu);
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 560) closeSiteMenu();
+  });
+
   document.querySelectorAll('[data-open]').forEach((trigger) => {
     trigger.addEventListener('click', (event) => {
       if (trigger.dataset.wasDragged === 'true') {
@@ -135,6 +311,32 @@
       const target = document.getElementById(trigger.dataset.scroll);
       target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+  });
+
+  const playModal = document.querySelector('[data-play-modal]');
+  const playModalTitle = document.getElementById('play-modal-title');
+  const playModalImg = document.querySelector('[data-play-modal-img]');
+  document.querySelectorAll('[data-play-src]').forEach((card) => {
+    card.addEventListener('click', () => {
+      if (!playModal || !playModalTitle || !playModalImg) return;
+      playModalTitle.textContent = card.dataset.playTitle || '尝试';
+      playModalImg.src = card.dataset.playSrc;
+      playModalImg.alt = card.dataset.playTitle || '';
+      playModal.classList.add('is-open');
+      playModal.setAttribute('aria-hidden', 'false');
+    });
+  });
+  document.querySelectorAll('[data-play-close]').forEach((button) => {
+    button.addEventListener('click', () => {
+      playModal?.classList.remove('is-open');
+      playModal?.setAttribute('aria-hidden', 'true');
+    });
+  });
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      playModal?.classList.remove('is-open');
+      playModal?.setAttribute('aria-hidden', 'true');
+    }
   });
 
   document.querySelectorAll('[data-close]').forEach((button) => {
@@ -158,15 +360,15 @@
       if (pointerId !== event.pointerId) return;
       const parentRect = stage.getBoundingClientRect();
       const rect = el.getBoundingClientRect();
-      startLeft = rect.left - parentRect.left;
-      startTop = rect.top - parentRect.top;
+      startLeft = el.offsetLeft;
+      startTop = el.offsetTop;
       startPointerX = event.clientX;
       startPointerY = event.clientY;
       el.style.left = startLeft + 'px';
       el.style.top = startTop + 'px';
       if (!isWindow) {
-        el.style.width = rect.width + 'px';
-        el.style.height = rect.height + 'px';
+        el.style.width = el.offsetWidth + 'px';
+        el.style.height = el.offsetHeight + 'px';
       }
       dragging = true;
       el.dataset.wasDragged = 'true';
@@ -273,6 +475,58 @@
     logo.addEventListener('pointerenter', (event) => scatter(event, 34));
     logo.addEventListener('pointermove', (event) => scatter(event, 12), { passive: true });
   }
+
+  const revealTargets = [
+    ...document.querySelectorAll('.reference-section .path-button'),
+    ...document.querySelectorAll('.reference-section .section-note'),
+    ...document.querySelectorAll('.work-card'),
+    ...document.querySelectorAll('.play-card'),
+    ...document.querySelectorAll('.contact-icons a'),
+    ...document.querySelectorAll('.back-top'),
+  ];
+  revealTargets.forEach((item, index) => {
+    item.classList.add('reveal-item');
+    item.style.setProperty('--reveal-delay', `${Math.min(index % 6, 5) * 80}ms`);
+  });
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          entry.target.classList.remove('is-faded');
+        } else if (entry.boundingClientRect.top < 0) {
+          entry.target.classList.remove('is-visible');
+          entry.target.classList.add('is-faded');
+        } else {
+          entry.target.classList.remove('is-visible', 'is-faded');
+        }
+      });
+    }, { threshold: [0, .12, .28], rootMargin: '-8% 0px -12% 0px' });
+    revealTargets.forEach((item) => revealObserver.observe(item));
+  } else {
+    revealTargets.forEach((item) => item.classList.add('is-visible'));
+  }
+
+  const timelineSections = [...document.querySelectorAll('.reference-section')];
+  const scrollStory = document.querySelector('.scroll-story');
+  const updateTimelineVisibility = () => {
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+    timelineSections.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+      const ratio = clamp(visible / Math.min(rect.height, viewportHeight), 0, 1);
+      section.style.setProperty('--section-visibility', ratio.toFixed(3));
+    });
+    if (scrollStory) {
+      const rect = scrollStory.getBoundingClientRect();
+      const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+      const ratio = clamp(visible / Math.min(rect.height, viewportHeight), 0, 1);
+      scrollStory.style.setProperty('--timeline-visibility', ratio.toFixed(3));
+    }
+  };
+  updateTimelineVisibility();
+  window.addEventListener('scroll', updateTimelineVisibility, { passive: true });
+  window.addEventListener('resize', updateTimelineVisibility, { passive: true });
 
   if (location.hash) {
     history.replaceState(null, '', location.pathname + location.search);
