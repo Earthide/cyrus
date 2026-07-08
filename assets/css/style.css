@@ -2510,7 +2510,7 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
 }
 
 .contact-icons {
-  gap: 72px;
+  gap: 58px;
 }
 
 .contact-section.reference-section {
