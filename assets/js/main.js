@@ -631,26 +631,19 @@
     revealTargets.forEach((item) => item.classList.add('is-visible'));
   }
 
-  const timelineSections = [...document.querySelectorAll('.reference-section')];
-  const scrollStory = document.querySelector('.scroll-story');
-  const updateTimelineVisibility = () => {
+  const visibleSections = [...document.querySelectorAll('.reference-section')];
+  const updateSectionVisibility = () => {
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
-    timelineSections.forEach((section) => {
+    visibleSections.forEach((section) => {
       const rect = section.getBoundingClientRect();
       const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
       const ratio = clamp(visible / Math.min(rect.height, viewportHeight), 0, 1);
       section.style.setProperty('--section-visibility', ratio.toFixed(3));
     });
-    if (scrollStory) {
-      const rect = scrollStory.getBoundingClientRect();
-      const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
-      const ratio = clamp(visible / Math.min(rect.height, viewportHeight), 0, 1);
-      scrollStory.style.setProperty('--timeline-visibility', ratio.toFixed(3));
-    }
   };
-  updateTimelineVisibility();
-  window.addEventListener('scroll', updateTimelineVisibility, { passive: true });
-  window.addEventListener('resize', updateTimelineVisibility, { passive: true });
+  updateSectionVisibility();
+  window.addEventListener('scroll', updateSectionVisibility, { passive: true });
+  window.addEventListener('resize', updateSectionVisibility, { passive: true });
 
   if (location.hash) {
     history.replaceState(null, '', location.pathname + location.search);
