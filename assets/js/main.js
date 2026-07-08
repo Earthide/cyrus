@@ -7,10 +7,12 @@
   const skipBootKey = 'cyrus-skip-next-boot';
   const trashLayer = document.querySelector('.layer-trash');
   const removableLayers = [...document.querySelectorAll('[data-draggable]')].filter((item) => !item.classList.contains('layer-trash'));
-  const trashResetTip = stage ? Object.assign(document.createElement('div'), {
+  const trashResetTip = stage ? Object.assign(document.createElement('button'), {
     className: 'trash-reset-tip',
-    textContent: '点中心重置',
+    type: 'button',
+    textContent: '已放入回收站 · 点击 Portfolio 恢复',
   }) : null;
+  if (trashResetTip) trashResetTip.setAttribute('aria-label', '恢复被放入回收站的主视觉素材');
   if (stage && trashResetTip) stage.appendChild(trashResetTip);
   let topZ = 100;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -59,10 +61,12 @@
 
     const logo = document.querySelector('[data-portfolio-logo]');
     if (logo) {
-      logo.style.left = (offsetX + heroWidth * scale * .5) + 'px';
-      logo.style.top = (offsetY + heroHeight * scale * .372) + 'px';
-      logo.style.width = (heroWidth * scale * .588) + 'px';
-      logo.style.transform = 'translateX(-50%)';
+      logo.style.removeProperty('left');
+      logo.style.removeProperty('right');
+      logo.style.removeProperty('margin-inline');
+      logo.style.top = (offsetY + heroHeight * scale * .325) + 'px';
+      logo.style.width = (heroWidth * scale * .82) + 'px';
+      logo.style.removeProperty('transform');
     }
 
     const lines = document.querySelector('.connection-lines');
@@ -156,18 +160,31 @@
   }
 
   function resetHeroLayers() {
-    removableLayers.forEach((el) => {
-      el.classList.remove('is-trashed', 'is-dragging', 'is-released', 'is-armed', 'is-over-trash');
+    const trashedLayers = removableLayers.filter((el) => el.classList.contains('is-trashed'));
+    removableLayers.forEach((el, index) => {
+      const wasTrashed = trashedLayers.includes(el);
+      el.classList.remove('is-dragging', 'is-released', 'is-armed', 'is-over-trash');
       delete el.dataset.wasDragged;
       el.style.left = '';
       el.style.top = '';
       el.style.width = '';
       el.style.height = '';
       el.style.zIndex = '';
+      if (wasTrashed) {
+        el.style.setProperty('--restore-delay', `${index * 55}ms`);
+        el.classList.add('is-restoring');
+      }
     });
     trashLayer?.classList.remove('is-trash-target');
     hideTrashResetTip();
     syncDesktopLayers();
+    trashedLayers.forEach((el) => {
+      el.classList.remove('is-trashed');
+      window.setTimeout(() => {
+        el.classList.remove('is-restoring');
+        el.style.removeProperty('--restore-delay');
+      }, 760);
+    });
   }
 
   function positionTrashResetTip() {
@@ -513,12 +530,24 @@
     el.addEventListener('lostpointercapture', stop);
   });
 
-  document.querySelectorAll('.desktop-layer img, .decor-layer').forEach((img) => {
-    img.addEventListener('load', syncDesktopLayers, { once: true });
-  });
-  syncDesktopLayers();
-  window.addEventListener('resize', () => {
+  const scheduleDesktopSync = () => {
     syncDesktopLayers();
+    requestAnimationFrame(() => {
+      syncDesktopLayers();
+      requestAnimationFrame(syncDesktopLayers);
+    });
+  };
+
+  document.querySelectorAll('.desktop-layer img, .decor-layer, [data-portfolio-logo]').forEach((img) => {
+    img.addEventListener('load', scheduleDesktopSync, { once: true });
+  });
+  scheduleDesktopSync();
+  window.addEventListener('load', scheduleDesktopSync, { once: true });
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(scheduleDesktopSync).catch(() => {});
+  }
+  window.addEventListener('resize', () => {
+    scheduleDesktopSync();
     updateConnectionLines();
   }, { passive: true });
 
