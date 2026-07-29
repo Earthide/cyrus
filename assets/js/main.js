@@ -1,24 +1,63 @@
 (() => {
   const playCardPins = [...document.querySelectorAll(".play-card-pin")];
-  const playPinVariants = [
-    "silver",
-    "blue-frosted",
-    "blue-glossy",
-    "silver",
-    "blue-frosted"
-  ];
-
-  for (let i = playPinVariants.length - 1; i > 0; i -= 1) {
-    const randomIndex = Math.floor(Math.random() * (i + 1));
-    [playPinVariants[i], playPinVariants[randomIndex]] = [
-      playPinVariants[randomIndex],
-      playPinVariants[i]
-    ];
-  }
-
-  playCardPins.forEach((pin, index) => {
-    pin.dataset.pinVariant = playPinVariants[index % playPinVariants.length];
+  playCardPins.forEach((pin) => {
+    pin.dataset.pinVariant = "silver";
   });
+
+  const playButtonScatter = document.querySelector('[data-play-button-scatter]');
+  const playOldButtonAssets = [
+    './assets/images/decorations/2ea49b145f1ed23a4e46421911221848.png',
+    './assets/images/decorations/6f7f990a3e0911a01982bf48dd091557.png',
+    './assets/images/decorations/07cf3d26cee335429cb4659b836f0b5b.png',
+    './assets/images/decorations/7f7eb78483046f5ae0672b9c260ceddf.png',
+    './assets/images/decorations/8c6f97a8816127ff84b362282f7fcf04.png',
+    './assets/images/decorations/16fe2b073da141448ef0b542cf2d1d63.png',
+    './assets/images/decorations/955bf59e59a90c68be9463e5b2b36152.png',
+    './assets/images/decorations/49457c9f6fde90dc1f2330a6f1cf77d9.png',
+    './assets/images/decorations/8880704d7ffb36d09cf40c46253193d5.png',
+    './assets/images/decorations/af392f36675523aaae7a1616e1d1fd07.png',
+    './assets/images/decorations/b5f5cbe96c28986c26bc5bd5cd9efc0f.png',
+    './assets/images/decorations/d80d188e0cca92328a429c031db8b4e9.png',
+    './assets/images/decorations/d296368a8eedf15f7afa0dce21211d1b.png'
+  ];
+  const playNewButtonAssets = [
+    './assets/images/decorations/pastel-button-01-pearl-round.png',
+    './assets/images/decorations/pastel-button-02-gingham-flower.png',
+    './assets/images/decorations/pastel-button-03-pink-heart.png',
+    './assets/images/decorations/pastel-button-04-layered-star.png',
+    './assets/images/decorations/pastel-button-05-pink-clover.png',
+    './assets/images/decorations/pastel-button-06-blue-flower.png',
+    './assets/images/decorations/pastel-button-07-gingham-round.png',
+    './assets/images/decorations/pastel-button-08-lime-star.png',
+    './assets/images/decorations/pastel-button-09-pearl-square.png',
+    './assets/images/decorations/pastel-button-10-cherry-round.png',
+    './assets/images/decorations/pastel-button-11-rose-flower.png',
+    './assets/images/decorations/pastel-button-12-coral-flower.png'
+  ];
+  const shufflePlayButtons = (items) => {
+    const shuffled = [...items];
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+    }
+    return shuffled;
+  };
+  if (playButtonScatter) {
+    const count = 8 + Math.floor(Math.random() * 4);
+    const newCount = Math.min(count, 4 + Math.floor(Math.random() * 3));
+    const chosen = [
+      ...shufflePlayButtons(playNewButtonAssets).slice(0, newCount),
+      ...shufflePlayButtons(playOldButtonAssets).slice(0, count - newCount)
+    ];
+    shufflePlayButtons(chosen).forEach((src, index) => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.dataset.playButtonSlot = `${index + 1}`;
+      img.style.setProperty('--button-rotate', `${Math.round(Math.random() * 36 - 18)}deg`);
+      playButtonScatter.appendChild(img);
+    });
+  }
 
   const stage = document.querySelector('.desktop-stage');
   const desktopFrame = document.querySelector('.desktop-bg');
@@ -556,14 +595,49 @@
   const playDetailViewport = document.querySelector('[data-play-detail-viewport]');
   const playDetailPrev = document.querySelector('[data-play-detail-prev]');
   const playDetailNext = document.querySelector('[data-play-detail-next]');
+  const playDetailButtonScatter = document.querySelector('[data-play-detail-buttons]');
   const playgroundMascot = document.querySelector('.playground-mascot');
   const playgroundBoard = document.querySelector('.play-board');
+  const playDetailButtonAssets = [
+    './assets/images/decorations/2ea49b145f1ed23a4e46421911221848.png',
+    './assets/images/decorations/6f7f990a3e0911a01982bf48dd091557.png',
+    './assets/images/decorations/07cf3d26cee335429cb4659b836f0b5b.png',
+    './assets/images/decorations/7f7eb78483046f5ae0672b9c260ceddf.png',
+    './assets/images/decorations/8c6f97a8816127ff84b362282f7fcf04.png',
+    './assets/images/decorations/16fe2b073da141448ef0b542cf2d1d63.png',
+    './assets/images/decorations/955bf59e59a90c68be9463e5b2b36152.png',
+    './assets/images/decorations/49457c9f6fde90dc1f2330a6f1cf77d9.png',
+    './assets/images/decorations/8880704d7ffb36d09cf40c46253193d5.png',
+    './assets/images/decorations/af392f36675523aaae7a1616e1d1fd07.png',
+    './assets/images/decorations/b5f5cbe96c28986c26bc5bd5cd9efc0f.png',
+    './assets/images/decorations/d80d188e0cca92328a429c031db8b4e9.png',
+    './assets/images/decorations/d296368a8eedf15f7afa0dce21211d1b.png',
+    ...playNewButtonAssets
+  ];
   let playDetailIndex = 0;
   let playDetailPointerId = null;
   let playDetailStartX = 0;
   let playDetailStartY = 0;
   let playDetailDeltaX = 0;
   let playDetailFocused = false;
+  const renderPlayDetailButtons = () => {
+    if (!playDetailButtonScatter) return;
+    const choices = [...playDetailButtonAssets];
+    for (let index = choices.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [choices[index], choices[randomIndex]] = [choices[randomIndex], choices[index]];
+    }
+    const count = 3 + Math.floor(Math.random() * 3);
+    playDetailButtonScatter.replaceChildren(...choices.slice(0, count).map((src, index) => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.dataset.detailButtonSlot = `${index + 1}`;
+      img.style.setProperty('--detail-button-rotate', `${Math.round(Math.random() * 34 - 17)}deg`);
+      img.style.setProperty('--detail-button-scale', `${(0.9 + Math.random() * 0.22).toFixed(2)}`);
+      return img;
+    }));
+  };
   const getPlayDetailButtons = () => playDetailTrack ? [...playDetailTrack.querySelectorAll('.play-detail-image')] : [];
   const syncPlayDetailGallery = () => {
     const buttons = getPlayDetailButtons();
@@ -654,6 +728,7 @@
     const subtitle = card.dataset.playSubtitle || '';
     const desc = card.dataset.playDesc || '';
     renderPlayDetailGallery(card);
+    renderPlayDetailButtons();
     playDetailTitle.textContent = title;
     if (playDetailSubtitle) {
       playDetailSubtitle.textContent = subtitle;
@@ -698,11 +773,15 @@
     syncPlayDetailGallery();
   });
   playgroundMascot?.addEventListener('click', (event) => {
-    if (!playDetail || !playgroundBoard?.classList.contains('is-detail-open')) return;
+    if (!playgroundBoard) return;
+    event.preventDefault();
+    event.stopPropagation();
     const rect = playgroundMascot.getBoundingClientRect();
     const goNext = event.clientX - rect.left >= rect.width / 2;
-    playgroundMascot.style.setProperty('--mascot-drive', `${goNext ? 26 : -26}px`);
-    playgroundMascot.style.setProperty('--mascot-turn', goNext ? '1' : '-1');
+    playgroundMascot.style.setProperty('--mascot-drive', `${goNext ? 48 : -48}px`);
+    playgroundMascot.style.setProperty('--mascot-drive-back', `${goNext ? 34 : -34}px`);
+    playgroundMascot.style.setProperty('--mascot-turn-out', `${goNext ? 4 : -4}deg`);
+    playgroundMascot.style.setProperty('--mascot-turn-back', `${goNext ? -2 : 2}deg`);
     playgroundMascot.classList.remove('is-driving');
     void playgroundMascot.offsetWidth;
     playgroundMascot.classList.add('is-driving');
@@ -814,6 +893,11 @@
     let galleryStartY = 0;
     let galleryDeltaX = 0;
     let galleryDidSwipe = false;
+    let galleryTouchId = null;
+    let galleryTouchStartX = 0;
+    let galleryTouchStartY = 0;
+    let galleryTouchDeltaX = 0;
+    let galleryTouchDirection = null;
     const getGallerySlides = () => {
       if (gallery.classList.contains('is-mobile-single') && mobileGalleryQuery.matches) {
         return [...gallery.querySelectorAll('.work-gallery-image, .work-gallery-video-page')];
@@ -853,6 +937,7 @@
       goToGallery(galleryIndex + 1);
     });
     viewport?.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'touch' && 'ontouchstart' in window) return;
       if (event.target?.closest?.('video, iframe')) return;
       if (event.button !== undefined && event.button !== 0) return;
       galleryPointerId = event.pointerId;
@@ -890,6 +975,60 @@
     };
     viewport?.addEventListener('pointerup', endGallerySwipe);
     viewport?.addEventListener('pointercancel', endGallerySwipe);
+    const findGalleryTouch = (touches, identifier) => {
+      for (let index = 0; index < touches.length; index += 1) {
+        if (touches[index].identifier === identifier) return touches[index];
+      }
+      return null;
+    };
+    viewport?.addEventListener('touchstart', (event) => {
+      if (galleryTouchId !== null || event.touches.length !== 1) return;
+      if (event.target?.closest?.('video, iframe')) return;
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      galleryTouchId = touch.identifier;
+      galleryTouchStartX = touch.clientX;
+      galleryTouchStartY = touch.clientY;
+      galleryTouchDeltaX = 0;
+      galleryTouchDirection = null;
+      galleryDidSwipe = false;
+      viewport.classList.add('is-dragging');
+    }, { passive: true });
+    viewport?.addEventListener('touchmove', (event) => {
+      if (galleryTouchId === null || !track) return;
+      const touch = findGalleryTouch(event.touches, galleryTouchId);
+      if (!touch) return;
+      galleryTouchDeltaX = touch.clientX - galleryTouchStartX;
+      const deltaY = touch.clientY - galleryTouchStartY;
+      if (!galleryTouchDirection && Math.max(Math.abs(galleryTouchDeltaX), Math.abs(deltaY)) >= 6) {
+        galleryTouchDirection = Math.abs(galleryTouchDeltaX) > Math.abs(deltaY) ? 'x' : 'y';
+      }
+      if (galleryTouchDirection !== 'x') return;
+      if (event.cancelable) event.preventDefault();
+      galleryDidSwipe = true;
+      track.style.transition = 'none';
+      track.style.transform = `translateX(calc(-${galleryIndex * 100}% + ${galleryTouchDeltaX}px))`;
+    }, { passive: false });
+    const finishGalleryTouch = (event, cancelled = false) => {
+      if (galleryTouchId === null) return;
+      const touch = findGalleryTouch(event.changedTouches, galleryTouchId);
+      if (touch) galleryTouchDeltaX = touch.clientX - galleryTouchStartX;
+      const threshold = Math.max(30, (viewport?.clientWidth || 0) * .04);
+      if (!cancelled && galleryTouchDirection === 'x' && galleryTouchDeltaX <= -threshold) {
+        goToGallery(galleryIndex + 1);
+      } else if (!cancelled && galleryTouchDirection === 'x' && galleryTouchDeltaX >= threshold) {
+        goToGallery(galleryIndex - 1);
+      } else {
+        syncGallery();
+      }
+      viewport?.classList.remove('is-dragging');
+      galleryTouchId = null;
+      galleryTouchDirection = null;
+      galleryTouchDeltaX = 0;
+      window.setTimeout(() => { galleryDidSwipe = false; }, 450);
+    };
+    viewport?.addEventListener('touchend', (event) => finishGalleryTouch(event));
+    viewport?.addEventListener('touchcancel', (event) => finishGalleryTouch(event, true));
     viewport?.addEventListener('dragstart', (event) => {
       event.preventDefault();
     });
