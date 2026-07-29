@@ -27,12 +27,24 @@
         <a class="path-button" href="./work-02.html">下一个作品</a>
       </div>
     </div>
-    <section class="work-gallery is-mobile-single" data-work-gallery aria-label="CMF 颜色研究视频展示">
-      <div class="work-gallery-hint" aria-hidden="true">点击播放视频</div>
+    <section class="work-gallery is-mobile-single" data-work-gallery aria-label="CMF 颜色研究展示">
+      <div class="work-gallery-hint" aria-hidden="true">可以左右滑动或者点击箭头切换哦</div>
       <button class="work-gallery-arrow is-prev" type="button" data-gallery-prev aria-label="上一页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"></path></svg></button>
       <div class="work-gallery-viewport">
         <div class="work-gallery-track" data-gallery-track>
-          <section class="work-gallery-page work-gallery-video-page" aria-label="第 1 页：CMF 颜色研究视频">
+          <section class="work-gallery-page" aria-label="第 1 页：拍摄实物样板">
+            <button class="work-gallery-image work-gallery-labeled-image" type="button" data-gallery-image="../assets/images/works/work-01-cmf/cmf-sample-photo.png" aria-label="查看拍摄实物样板大图">
+              <img src="../assets/images/works/work-01-cmf/cmf-sample-photo.png" alt="拍摄实物样板">
+              <span>拍摄实物样板</span>
+            </button>
+          </section>
+          <section class="work-gallery-page" aria-label="第 2 页：Blender数字化复现材质">
+            <button class="work-gallery-image work-gallery-labeled-image" type="button" data-gallery-image="../assets/images/works/work-01-cmf/cmf-cover.png" aria-label="查看Blender数字化复现材质大图">
+              <img src="../assets/images/works/work-01-cmf/cmf-cover.png" alt="Blender数字化复现材质">
+              <span>Blender数字化复现材质</span>
+            </button>
+          </section>
+          <section class="work-gallery-page work-gallery-video-page" aria-label="第 3 页：CMF 颜色研究视频">
             <div class="work-gallery-video-embed" data-youtube-player data-youtube-id="5GRfVoczREE">
               <button class="work-gallery-video-poster" type="button" data-youtube-play aria-label="播放 CMF 颜色研究视频">
                 <img src="https://img.youtube.com/vi/5GRfVoczREE/maxresdefault.jpg" alt="CMF 颜色研究视频封面">
@@ -40,6 +52,18 @@
                 <span class="work-gallery-video-copy">点击播放</span>
               </button>
             </div>
+          </section>
+          <section class="work-gallery-page" aria-label="第 4 页：D·CMF Lab 实验室环境">
+            <button class="work-gallery-image work-gallery-labeled-image" type="button" data-gallery-image="../assets/images/works/work-01-cmf/cmf-lab-environment-01.png" aria-label="查看D·CMF Lab 实验室环境大图">
+              <img src="../assets/images/works/work-01-cmf/cmf-lab-environment-01.png" alt="D·CMF Lab 实验室环境">
+              <span>D·CMF Lab 实验室环境</span>
+            </button>
+          </section>
+          <section class="work-gallery-page" aria-label="第 5 页：D·CMF Lab 实验室环境">
+            <button class="work-gallery-image work-gallery-labeled-image" type="button" data-gallery-image="../assets/images/works/work-01-cmf/cmf-lab-environment-02.png" aria-label="查看D·CMF Lab 实验室环境大图">
+              <img src="../assets/images/works/work-01-cmf/cmf-lab-environment-02.png" alt="D·CMF Lab 实验室环境">
+              <span>D·CMF Lab 实验室环境</span>
+            </button>
           </section>
         </div>
       </div>
@@ -49,6 +73,13 @@
     <p>跨媒介颜色一致性 / 对色方法 / 数字材质</p>
     <p>基于江南大学 CMF 数字化研究创新实验室经历，聚焦屏幕端与实物端颜色匹配、数字化颜色模拟流程、光源与材质对颜色表现的影响分析，以及颜色校正策略输出。</p>
   </main>
+  <div class="work-image-modal" data-gallery-modal aria-hidden="true">
+    <button class="work-image-backdrop" type="button" data-gallery-close aria-label="关闭"></button>
+    <div class="work-image-modal-window" role="dialog" aria-modal="true" aria-label="作品图片预览">
+      <button class="work-image-close" type="button" data-gallery-close aria-label="关闭"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
+      <img src="" alt="" data-gallery-modal-img>
+    </div>
+  </div>
   <script src="../assets/js/main.js"></script>
 </body>
 </html>

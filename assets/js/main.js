@@ -409,18 +409,346 @@
   const playModal = document.querySelector('[data-play-modal]');
   const playModalTitle = document.getElementById('play-modal-title');
   const playModalImg = document.querySelector('[data-play-modal-img]');
+  const playModalVideo = document.querySelector('[data-play-modal-video]');
+  const playModalGallery = document.querySelector('[data-play-modal-gallery]');
+  const playModalStack = document.querySelector('[data-play-modal-stack]');
+  const playModalDesc = document.querySelector('[data-play-modal-desc]');
+  const playModalPrev = document.querySelector('[data-play-modal-prev]');
+  const playModalNext = document.querySelector('[data-play-modal-next]');
+  let playModalSources = [];
+  let playModalIndex = 0;
+  let playModalFocused = false;
+  let playModalAltBase = '';
+  let playModalPointerId = null;
+  let playModalStartX = 0;
+  let playModalStartY = 0;
+  let playModalDeltaX = 0;
+  const getPlayYouTubeId = (src) => src?.startsWith('youtube:') ? src.slice(8).trim() : '';
+  const getPlaySourceThumb = (src) => {
+    const videoId = getPlayYouTubeId(src);
+    return videoId ? `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg` : src;
+  };
+  const getPlayYouTubeEmbed = (videoId) => {
+    const pageOrigin = window.location.origin && window.location.origin !== 'null'
+      ? `&origin=${encodeURIComponent(window.location.origin)}`
+      : '';
+    return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&playsinline=1${pageOrigin}`;
+  };
+  const syncPlayModal = () => {
+    if (!playModalImg || !playModalGallery) return;
+    playModalIndex = Math.min(Math.max(playModalIndex, 0), Math.max(playModalSources.length - 1, 0));
+    const currentSource = playModalSources[playModalIndex] || '';
+    const videoId = getPlayYouTubeId(currentSource);
+    if (videoId && playModalVideo) {
+      playModalImg.hidden = true;
+      playModalImg.removeAttribute('src');
+      playModalVideo.hidden = false;
+      playModalVideo.src = getPlayYouTubeEmbed(videoId);
+    } else {
+      if (playModalVideo) {
+        playModalVideo.hidden = true;
+        playModalVideo.removeAttribute('src');
+      }
+      playModalImg.hidden = false;
+      playModalImg.src = currentSource;
+    }
+    playModalImg.alt = `${playModalAltBase || playModalTitle?.textContent || '尝试'} 第 ${playModalIndex + 1} 张`;
+    playModalGallery.classList.toggle('is-video', Boolean(videoId));
+    if (playModalPrev) playModalPrev.disabled = !playModalFocused || playModalSources.length <= 1 || playModalIndex === 0;
+    if (playModalNext) playModalNext.disabled = !playModalFocused || playModalSources.length <= 1 || playModalIndex >= playModalSources.length - 1;
+    playModalGallery.classList.toggle('has-multiple', playModalFocused && playModalSources.length > 1);
+    playModalGallery.classList.toggle('is-overview', !playModalFocused);
+    playModalGallery.classList.toggle('is-focused', playModalFocused);
+    playModalStack?.querySelectorAll('.play-modal-stack-card').forEach((button, index) => {
+      button.classList.toggle('is-active', index === playModalIndex);
+      button.tabIndex = playModalFocused && index !== playModalIndex ? -1 : 0;
+    });
+  };
+  const renderPlayModalStack = () => {
+    if (!playModalStack) return;
+    playModalStack.replaceChildren(...playModalSources.map((src, index) => {
+      const button = document.createElement('button');
+      const img = document.createElement('img');
+      const offsetX = [-2, 5, 0, 7, 2][index % 5];
+      const offsetY = [0, 16, 32, 48, 64][index % 5];
+      const rotation = [-7, -3, 0, 5, -5][index % 5];
+      button.className = 'play-modal-stack-card';
+      button.type = 'button';
+      button.setAttribute('aria-label', `查看第 ${index + 1} 张`);
+      button.style.setProperty('--modal-stack-x', `${offsetX}%`);
+      button.style.setProperty('--modal-stack-y', `${offsetY}%`);
+      button.style.setProperty('--modal-stack-rot', `${rotation}deg`);
+      button.style.setProperty('--modal-stack-z', `${100 - index}`);
+      img.src = getPlaySourceThumb(src);
+      img.alt = `${playModalAltBase || '尝试'} 第 ${index + 1} 张`;
+      button.classList.toggle('is-video', Boolean(getPlayYouTubeId(src)));
+      button.appendChild(img);
+      button.addEventListener('click', () => {
+        playModalIndex = index;
+        playModalFocused = true;
+        syncPlayModal();
+      });
+      return button;
+    }));
+  };
+  const openPlayModalFromCard = (card) => {
+    if (!playModal || !playModalTitle || !playModalImg) return;
+    const title = card.dataset.playTitle || '尝试';
+    playModalTitle.textContent = title;
+    playModalAltBase = card.querySelector('img')?.alt || title;
+    if (playModalDesc) playModalDesc.textContent = card.dataset.playDesc || '具体文字...';
+    playModalSources = (card.dataset.playGallery || card.dataset.playSrc || '')
+      .split('|')
+      .map((item) => item.trim())
+      .filter(Boolean);
+    playModalIndex = 0;
+    playModalFocused = false;
+    renderPlayModalStack();
+    syncPlayModal();
+    playModal.classList.add('is-open');
+    playModal.setAttribute('aria-hidden', 'false');
+  };
+  const playDetail = document.querySelector('[data-play-detail]');
+  const playDetailImg = document.querySelector('[data-play-detail-img]');
+  const playDetailTitle = document.querySelector('[data-play-detail-title]');
+  const playDetailSubtitle = document.querySelector('[data-play-detail-subtitle]');
+  const playDetailDesc = document.querySelector('[data-play-detail-desc]');
+  const playDetailZoom = document.querySelector('[data-play-detail-zoom]');
+  const playDetailClose = document.querySelector('[data-play-detail-close]');
+  const playDetailTrack = document.querySelector('[data-play-detail-track]');
+  const playDetailViewport = document.querySelector('[data-play-detail-viewport]');
+  const playDetailPrev = document.querySelector('[data-play-detail-prev]');
+  const playDetailNext = document.querySelector('[data-play-detail-next]');
+  const playgroundMascot = document.querySelector('.playground-mascot');
+  const playgroundBoard = document.querySelector('.play-board');
+  let playDetailIndex = 0;
+  let playDetailPointerId = null;
+  let playDetailStartX = 0;
+  let playDetailStartY = 0;
+  let playDetailDeltaX = 0;
+  let playDetailFocused = false;
+  const getPlayDetailButtons = () => playDetailTrack ? [...playDetailTrack.querySelectorAll('.play-detail-image')] : [];
+  const syncPlayDetailGallery = () => {
+    const buttons = getPlayDetailButtons();
+    playDetailIndex = Math.min(Math.max(playDetailIndex, 0), Math.max(buttons.length - 1, 0));
+    buttons.forEach((button, index) => {
+      const offset = index - playDetailIndex;
+      const listX = [-8, 10, -2, 18, -12][index % 5];
+      const listRot = [-7, -4, 0, -6, 5][index % 5];
+      const rowX = [-225, -75, 75, 225, 0][index % 5];
+      button.classList.toggle('is-active', playDetailFocused && index === playDetailIndex);
+      button.style.setProperty('--detail-offset', `${offset}`);
+      button.style.setProperty('--detail-list-index', `${index}`);
+      button.style.setProperty('--detail-list-x', `${listX}`);
+      button.style.setProperty('--detail-list-rot', `${listRot}`);
+      button.style.setProperty('--detail-row-x', `${rowX}`);
+      button.style.setProperty('--detail-distance', `${Math.abs(offset)}`);
+      button.style.setProperty('--detail-opacity', `${playDetailFocused ? (index === playDetailIndex ? 1 : 0) : 1}`);
+      button.style.setProperty('--detail-scale', `${playDetailFocused ? (index === playDetailIndex ? 1 : .96) : 1}`);
+      button.style.setProperty('--detail-hover-scale', `${playDetailFocused ? 1.01 : 1.012}`);
+      button.style.setProperty('--detail-z', `${playDetailFocused ? (index === playDetailIndex ? 120 : 1) : 100 - index}`);
+      button.tabIndex = index === playDetailIndex ? 0 : -1;
+    });
+    if (playDetailPrev) playDetailPrev.disabled = buttons.length <= 1 || playDetailIndex === 0;
+    if (playDetailNext) playDetailNext.disabled = buttons.length <= 1 || playDetailIndex >= buttons.length - 1;
+    playDetail?.classList.toggle('has-gallery', buttons.length > 1);
+    playDetail?.classList.toggle('is-gallery-focused', playDetailFocused);
+  };
+  const openPlayDetailModal = (button) => {
+    if (!playModal || !playModalTitle || !playModalImg || !playDetailTitle) return;
+    const img = button?.querySelector('img');
+    if (!img) return;
+    playModalTitle.textContent = playDetailTitle.textContent || '尝试';
+    playModalImg.src = img.src;
+    playModalImg.alt = img.alt || playDetailTitle.textContent || '';
+    playModal.classList.add('is-open');
+    playModal.setAttribute('aria-hidden', 'false');
+  };
+  const renderPlayDetailGallery = (card) => {
+    if (!playDetailTrack) return;
+    const title = card.dataset.playTitle || '尝试';
+    const cardImg = card.querySelector('img');
+    const sources = (card.dataset.playGallery || card.dataset.playSrc || '')
+      .split('|')
+      .map((item) => item.trim())
+      .filter(Boolean);
+    playDetailTrack.replaceChildren(...sources.map((src, index) => {
+      const button = document.createElement('button');
+      button.className = 'play-detail-image';
+      button.type = 'button';
+      button.setAttribute('aria-label', `放大查看${title} 第 ${index + 1} 张`);
+      const img = document.createElement('img');
+      button.dataset.playSource = src;
+      button.classList.toggle('is-video', Boolean(getPlayYouTubeId(src)));
+      img.src = getPlaySourceThumb(src);
+      img.alt = `${cardImg?.alt || title} 第 ${index + 1} 张`;
+      if (index === 0) img.setAttribute('data-play-detail-img', '');
+      button.appendChild(img);
+      return button;
+    }));
+    playDetailIndex = 0;
+    playDetailFocused = false;
+    syncPlayDetailGallery();
+  };
+  const openPlayDetailImageLarge = (button, index = 0) => {
+    if (!playModal || !playModalTitle || !playModalImg || !playDetailTitle) return;
+    const buttons = getPlayDetailButtons();
+    const img = button?.querySelector('img');
+    if (!img || !buttons.length) return;
+    playModalTitle.textContent = playDetailTitle.textContent || '尝试';
+    playModalAltBase = img.alt || playDetailTitle.textContent || '';
+    if (playModalDesc && playDetailDesc) playModalDesc.textContent = playDetailDesc.textContent || '';
+    playModalSources = buttons
+      .map((item) => item.dataset.playSource || item.querySelector('img')?.getAttribute('src') || item.querySelector('img')?.src || '')
+      .filter(Boolean);
+    playModalIndex = Math.min(Math.max(index, 0), Math.max(playModalSources.length - 1, 0));
+    playModalFocused = true;
+    playDetailFocused = true;
+    syncPlayDetailGallery();
+    renderPlayModalStack();
+    syncPlayModal();
+    playModal.classList.add('is-open');
+    playModal.setAttribute('aria-hidden', 'false');
+  };
+  const updatePlayDetail = (card) => {
+    if (!playDetail || !playDetailTitle || !playDetailDesc) return false;
+    const playBoard = card.closest('.play-board');
+    const title = card.dataset.playTitle || '尝试';
+    const subtitle = card.dataset.playSubtitle || '';
+    const desc = card.dataset.playDesc || '';
+    renderPlayDetailGallery(card);
+    playDetailTitle.textContent = title;
+    if (playDetailSubtitle) {
+      playDetailSubtitle.textContent = subtitle;
+      playDetailSubtitle.hidden = !subtitle;
+    }
+    playDetailDesc.textContent = desc;
+    playDetailZoom?.setAttribute('aria-label', `放大查看${title}`);
+    document.querySelectorAll('[data-play-src]').forEach((item) => {
+      item.classList.toggle('is-selected', item === card);
+    });
+    playDetail.classList.toggle('is-wenwen', title === '望闻问切');
+    playDetail.classList.toggle('is-dandelion', title === '摇曳蒲公英');
+    playDetail.classList.toggle('is-ifcv', title.includes('IFCV'));
+    playDetail.classList.toggle('is-shuangtan', title.includes('双碳'));
+    playBoard?.classList.add('is-detail-open');
+    playDetail.setAttribute('aria-hidden', 'false');
+    return true;
+  };
   document.querySelectorAll('[data-play-src]').forEach((card) => {
     card.addEventListener('click', () => {
-      if (!playModal || !playModalTitle || !playModalImg) return;
-      playModalTitle.textContent = card.dataset.playTitle || '尝试';
-      playModalImg.src = card.dataset.playSrc;
-      playModalImg.alt = card.dataset.playTitle || '';
-      playModal.classList.add('is-open');
-      playModal.setAttribute('aria-hidden', 'false');
+      if (window.matchMedia('(max-width: 900px)').matches) return;
+      if (!updatePlayDetail(card)) openPlayModalFromCard(card);
     });
   });
+  playDetailTrack?.addEventListener('click', (event) => {
+    const button = event.target.closest('.play-detail-image');
+    if (!button) return;
+    const buttons = getPlayDetailButtons();
+    const nextIndex = buttons.indexOf(button);
+    if (nextIndex < 0) return;
+    playDetailIndex = nextIndex;
+    openPlayDetailImageLarge(button, nextIndex);
+  });
+  playDetailPrev?.addEventListener('click', () => {
+    if (!playDetailFocused) return;
+    playDetailIndex -= 1;
+    syncPlayDetailGallery();
+  });
+  playDetailNext?.addEventListener('click', () => {
+    if (!playDetailFocused) return;
+    playDetailIndex += 1;
+    syncPlayDetailGallery();
+  });
+  playgroundMascot?.addEventListener('click', (event) => {
+    if (!playDetail || !playgroundBoard?.classList.contains('is-detail-open')) return;
+    const rect = playgroundMascot.getBoundingClientRect();
+    const goNext = event.clientX - rect.left >= rect.width / 2;
+    playgroundMascot.style.setProperty('--mascot-drive', `${goNext ? 26 : -26}px`);
+    playgroundMascot.style.setProperty('--mascot-turn', goNext ? '1' : '-1');
+    playgroundMascot.classList.remove('is-driving');
+    void playgroundMascot.offsetWidth;
+    playgroundMascot.classList.add('is-driving');
+  });
+  playgroundMascot?.addEventListener('animationend', () => {
+    playgroundMascot.classList.remove('is-driving');
+  });
+  playDetailViewport?.addEventListener('pointerdown', (event) => {
+    if (!playDetailFocused) return;
+    if (event.button !== undefined && event.button !== 0) return;
+    playDetailPointerId = event.pointerId;
+    playDetailStartX = event.clientX;
+    playDetailStartY = event.clientY;
+    playDetailDeltaX = 0;
+    try { playDetailViewport.setPointerCapture(playDetailPointerId); } catch (error) {}
+  });
+  playDetailViewport?.addEventListener('pointermove', (event) => {
+    if (playDetailPointerId !== event.pointerId) return;
+    playDetailDeltaX = event.clientX - playDetailStartX;
+  }, { passive: true });
+  const endPlayDetailSwipe = (event) => {
+    if (playDetailPointerId !== event.pointerId) return;
+    const deltaY = event.clientY - playDetailStartY;
+    const threshold = Math.max(48, (playDetailViewport?.clientWidth || 0) * .08);
+    if (Math.abs(playDetailDeltaX) > threshold && Math.abs(playDetailDeltaX) > Math.abs(deltaY)) {
+      playDetailIndex += playDetailDeltaX < 0 ? 1 : -1;
+      syncPlayDetailGallery();
+    }
+    try { if (playDetailViewport?.hasPointerCapture(playDetailPointerId)) playDetailViewport.releasePointerCapture(playDetailPointerId); } catch (error) {}
+    playDetailPointerId = null;
+  };
+  playDetailViewport?.addEventListener('pointerup', endPlayDetailSwipe);
+  playDetailViewport?.addEventListener('pointercancel', endPlayDetailSwipe);
+  playDetailClose?.addEventListener('click', () => {
+    playDetailFocused = false;
+    syncPlayDetailGallery();
+    playDetail?.closest('.play-board')?.classList.remove('is-detail-open');
+    playDetail?.setAttribute('aria-hidden', 'true');
+  });
+  playModalPrev?.addEventListener('click', () => {
+    if (!playModalFocused) return;
+    playModalIndex -= 1;
+    syncPlayModal();
+  });
+  playModalNext?.addEventListener('click', () => {
+    if (!playModalFocused) return;
+    playModalIndex += 1;
+    syncPlayModal();
+  });
+  playModalGallery?.addEventListener('pointerdown', (event) => {
+    if (!playModalFocused) return;
+    if (event.target.closest('button')) return;
+    if (event.button !== undefined && event.button !== 0) return;
+    playModalPointerId = event.pointerId;
+    playModalStartX = event.clientX;
+    playModalStartY = event.clientY;
+    playModalDeltaX = 0;
+    try { playModalGallery.setPointerCapture(playModalPointerId); } catch (error) {}
+  });
+  playModalGallery?.addEventListener('pointermove', (event) => {
+    if (playModalPointerId !== event.pointerId) return;
+    playModalDeltaX = event.clientX - playModalStartX;
+  }, { passive: true });
+  const endPlayModalSwipe = (event) => {
+    if (playModalPointerId !== event.pointerId) return;
+    const deltaY = event.clientY - playModalStartY;
+    const threshold = Math.max(56, (playModalGallery?.clientWidth || 0) * .06);
+    if (Math.abs(playModalDeltaX) > threshold && Math.abs(playModalDeltaX) > Math.abs(deltaY)) {
+      playModalIndex += playModalDeltaX < 0 ? 1 : -1;
+      syncPlayModal();
+    }
+    try { if (playModalGallery?.hasPointerCapture(playModalPointerId)) playModalGallery.releasePointerCapture(playModalPointerId); } catch (error) {}
+    playModalPointerId = null;
+  };
+  playModalGallery?.addEventListener('pointerup', endPlayModalSwipe);
+  playModalGallery?.addEventListener('pointercancel', endPlayModalSwipe);
   document.querySelectorAll('[data-play-close]').forEach((button) => {
     button.addEventListener('click', () => {
+      playModalFocused = false;
+      playModalPointerId = null;
+      if (playModalVideo) playModalVideo.removeAttribute('src');
+      playDetailFocused = false;
+      syncPlayDetailGallery();
       playModal?.classList.remove('is-open');
       playModal?.setAttribute('aria-hidden', 'true');
     });
@@ -469,6 +797,15 @@
       galleryIndex = Math.min(Math.max(nextIndex, 0), Math.max(slides.length - 1, 0));
       syncGallery();
     };
+    gallery.querySelectorAll('.work-gallery-video-page').forEach((page) => {
+      if (page.querySelector('.work-gallery-video-swipe-zone')) return;
+      ['prev', 'next'].forEach((direction) => {
+        const zone = document.createElement('span');
+        zone.className = `work-gallery-video-swipe-zone is-${direction}`;
+        zone.setAttribute('aria-hidden', 'true');
+        page.appendChild(zone);
+      });
+    });
     prevButton?.addEventListener('click', () => {
       goToGallery(galleryIndex - 1);
     });
@@ -476,7 +813,7 @@
       goToGallery(galleryIndex + 1);
     });
     viewport?.addEventListener('pointerdown', (event) => {
-      if (event.target?.closest?.('video, iframe, [data-youtube-player]')) return;
+      if (event.target?.closest?.('video, iframe')) return;
       if (event.button !== undefined && event.button !== 0) return;
       galleryPointerId = event.pointerId;
       galleryStartX = event.clientX;
@@ -484,13 +821,15 @@
       galleryDeltaX = 0;
       galleryDidSwipe = false;
       viewport.classList.add('is-dragging');
-      try { viewport.setPointerCapture(galleryPointerId); } catch (error) {}
     });
     viewport?.addEventListener('pointermove', (event) => {
       if (galleryPointerId !== event.pointerId || !track) return;
       galleryDeltaX = event.clientX - galleryStartX;
       const deltaY = event.clientY - galleryStartY;
       if (Math.abs(galleryDeltaX) < 8 || Math.abs(galleryDeltaX) < Math.abs(deltaY)) return;
+      if (!galleryDidSwipe) {
+        try { viewport.setPointerCapture(galleryPointerId); } catch (error) {}
+      }
       galleryDidSwipe = true;
       track.style.transition = 'none';
       track.style.transform = `translateX(calc(-${galleryIndex * 100}% + ${galleryDeltaX}px))`;
@@ -515,6 +854,11 @@
       galleryPointerId = null;
       syncGallery();
     });
+    viewport?.addEventListener('click', (event) => {
+      if (!galleryDidSwipe) return;
+      event.preventDefault();
+      event.stopPropagation();
+    }, true);
     gallery.querySelectorAll('[data-gallery-image]').forEach((button) => {
       button.addEventListener('click', () => {
         if (galleryDidSwipe) return;
@@ -924,6 +1268,11 @@
   });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      playModalFocused = false;
+      playModalPointerId = null;
+      if (playModalVideo) playModalVideo.removeAttribute('src');
+      playDetailFocused = false;
+      syncPlayDetailGallery();
       playModal?.classList.remove('is-open');
       playModal?.setAttribute('aria-hidden', 'true');
       document.querySelector('[data-gallery-modal]')?.classList.remove('is-open');
