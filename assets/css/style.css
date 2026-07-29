@@ -1614,6 +1614,7 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
 .work-gallery-viewport {
   overflow: hidden;
   touch-action: pan-y;
+  overscroll-behavior-x: contain;
   cursor: default;
 }
 .work-gallery-viewport.is-dragging {
@@ -1667,6 +1668,7 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
     0 0 0 1px rgba(255,255,255,.58) inset,
     0 18px 30px rgba(49,92,255,.12);
   overflow: hidden;
+  touch-action: pan-y;
   cursor: pointer;
   transition: filter .22s ease, box-shadow .22s ease, transform .22s ease;
 }
@@ -1683,6 +1685,9 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
   aspect-ratio: 16 / 9;
   object-fit: contain;
   image-rendering: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 .work-gallery-labeled-image {
   position: relative;
@@ -1754,6 +1759,9 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
   transition: transform .45s cubic-bezier(.2,.72,.2,1), filter .25s ease;
 }
 .work-gallery-video-poster::after {
@@ -1809,10 +1817,57 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
   width: 100%;
   height: 100%;
 }
+.youtube-watch-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255,255,255,.82);
+  border-radius: 4px;
+  color: #fff;
+  background: #315cff;
+  box-shadow:
+    0 4px 16px rgba(49,92,255,.38),
+    0 0 12px rgba(255,255,255,.34);
+  font: 800 13px/1.2 "Geely Design Type", "Microsoft YaHei", sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.youtube-watch-link:hover {
+  color: #fff;
+  background: #1742e8;
+}
+.youtube-watch-link[hidden] {
+  display: none;
+}
+.work-gallery-youtube-link {
+  position: absolute;
+  right: calc(50% - 50vw + clamp(34px, 5.6vw, 86px));
+  top: 0;
+  z-index: 40;
+}
+.work-06-page .work-gallery-youtube-link {
+  top: 50px;
+}
+.work-gallery-video-page:has([data-youtube-player]) {
+  box-sizing: border-box;
+  padding-top: 52px;
+}
 .work-gallery-video:focus,
 .work-gallery-video:focus-visible {
   outline: 0;
   box-shadow: none;
+}
+.catshroom-gallery-video {
+  width: min(1380px, 100%);
+  height: auto;
+  max-height: none;
+  aspect-ratio: 1184 / 720;
+  object-fit: contain;
+  background: #000;
 }
 .catshroom-card-section {
   width: min(1220px, 100%);
@@ -2585,6 +2640,21 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
   max-height: calc(90vh - 30px);
   object-fit: contain;
   image-rendering: auto;
+}
+.work-image-modal.is-shanshui-modal {
+  box-sizing: border-box;
+}
+.work-image-modal.is-shanshui-modal .work-image-modal-window {
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 94vw;
+  max-height: 90vh;
+}
+.work-image-modal.is-shanshui-modal .work-image-modal-window img {
+  width: auto;
+  max-width: calc(94vw - 28px);
+  height: auto;
+  max-height: calc(90vh - 28px);
 }
 .work-image-close {
   position: absolute;
@@ -4888,22 +4958,60 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
 .play-modal-window:has(.play-modal-gallery.is-focused.is-video) {
   display: grid;
   place-items: center;
+  box-sizing: border-box;
+  width: min(1180px, 90vw);
+  max-width: 90vw;
 }
 .play-modal-gallery.is-focused.is-video {
-  width: fit-content;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   margin-inline: auto;
+  padding-inline: clamp(58px, 5vw, 82px);
   place-items: center;
 }
 .play-modal-gallery.is-focused.is-video .play-modal-video {
+  width: 100%;
+  max-width: 1120px;
   justify-self: center;
   margin-inline: auto;
-  transform: translateX(calc(-1 * clamp(18px, 2vw, 28px)));
+  transform: none;
 }
 .play-modal-gallery.is-focused.is-video .play-modal-arrow.is-prev {
   left: calc(clamp(10px, 1.2vw, 20px) - 20px);
 }
 .play-modal-gallery.is-focused.is-video .play-modal-arrow.is-next {
   right: calc(clamp(10px, 1.2vw, 20px) - 20px);
+}
+.play-modal-youtube-link {
+  position: absolute;
+  right: calc(clamp(58px, 5vw, 82px) + clamp(18px, 2vw, 28px) + 12px);
+  top: 12px;
+  z-index: 8;
+}
+
+/* Focused playground images: keep the paper frame close to both landscape
+   and portrait artwork while retaining a clear lane for the page arrows. */
+.play-modal-window:has(.play-modal-gallery.is-focused:not(.is-video)) {
+  box-sizing: border-box;
+  padding: clamp(10px, 1vw, 14px);
+  transform: scale(1.15);
+}
+.play-modal-gallery.is-focused:not(.is-video) {
+  max-width: calc(90vw - clamp(20px, 2vw, 28px));
+  padding-inline: clamp(52px, 4vw, 64px);
+}
+.play-modal-gallery.is-focused:not(.is-video) > img {
+  max-width: min(1120px, calc(90vw - clamp(104px, 9.2vw, 140px)));
+}
+.play-modal-gallery.is-focused:not(.is-video) .play-modal-arrow.is-prev {
+  left: 0;
+}
+.play-modal-gallery.is-focused:not(.is-video) .play-modal-arrow.is-next {
+  right: 0;
+}
+.play-modal-window:has(.play-modal-gallery.is-focused.is-portrait:not(.is-video)) {
+  transform: scale(1.22);
 }
 
 /* Double-carbon project: keep all four pages visible as a horizontal stack
@@ -5344,17 +5452,66 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
   max-width: none;
   margin-left: 0;
 }
+.work-detail-long .work-long-intro h1,
+.work-detail-long .work-long-intro p {
+  margin-left: calc(50% - 50vw + clamp(34px, 5.6vw, 86px));
+}
+.work-detail-long .work-long-intro .work-long-description {
+  box-sizing: border-box;
+  width: calc(100vw - (2 * clamp(34px, 5.6vw, 86px)));
+  text-align: justify;
+  text-align-last: left;
+}
 .work-detail-long .work-long-images {
   display: grid;
   width: 100%;
   gap: 24px;
   margin-top: 36px;
+  margin-inline: auto;
+  justify-items: center;
 }
 .work-detail-long .work-long-images img {
   display: block;
   width: 100%;
   height: auto;
+  margin-inline: auto;
   object-fit: contain;
+}
+.work-detail-long .work-long-weixin-video {
+  display: grid;
+  width: 100%;
+  justify-items: center;
+  gap: 10px;
+}
+.work-detail-long .work-long-weixin-video iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: #202020;
+}
+.work-detail-long .work-long-weixin-video a {
+  justify-self: end;
+  color: #315cff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.work-detail-long .work-detail-nav {
+  margin-left: calc(
+    clamp(34px, 5.6vw, 86px) -
+    ((100vw - min(1180px, calc(100vw - 48px))) / 2)
+  );
+}
+
+@media (min-width: 761px) {
+  .work-detail-long .work-detail-nav {
+    margin-right: calc(
+      clamp(34px, 5.6vw, 86px) -
+      ((100vw - min(1180px, calc(100vw - 48px))) / 2)
+    );
+  }
 }
 
 @media (max-width: 760px) {

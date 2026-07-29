@@ -410,6 +410,7 @@
   const playModalTitle = document.getElementById('play-modal-title');
   const playModalImg = document.querySelector('[data-play-modal-img]');
   const playModalVideo = document.querySelector('[data-play-modal-video]');
+  const playModalYouTubeLink = document.querySelector('[data-play-youtube-link]');
   const playModalGallery = document.querySelector('[data-play-modal-gallery]');
   const playModalStack = document.querySelector('[data-play-modal-stack]');
   const playModalDesc = document.querySelector('[data-play-modal-desc]');
@@ -423,6 +424,12 @@
   let playModalStartX = 0;
   let playModalStartY = 0;
   let playModalDeltaX = 0;
+  playModalImg?.addEventListener('load', () => {
+    playModalGallery?.classList.toggle(
+      'is-portrait',
+      playModalImg.naturalHeight > playModalImg.naturalWidth
+    );
+  });
   const getPlayYouTubeId = (src) => src?.startsWith('youtube:') ? src.slice(8).trim() : '';
   const getPlaySourceThumb = (src) => {
     const videoId = getPlayYouTubeId(src);
@@ -444,12 +451,21 @@
       playModalImg.removeAttribute('src');
       playModalVideo.hidden = false;
       playModalVideo.src = getPlayYouTubeEmbed(videoId);
+      if (playModalYouTubeLink) {
+        playModalYouTubeLink.hidden = false;
+        playModalYouTubeLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+      }
     } else {
       if (playModalVideo) {
         playModalVideo.hidden = true;
         playModalVideo.removeAttribute('src');
       }
+      if (playModalYouTubeLink) {
+        playModalYouTubeLink.hidden = true;
+        playModalYouTubeLink.removeAttribute('href');
+      }
       playModalImg.hidden = false;
+      playModalGallery.classList.remove('is-portrait');
       playModalImg.src = currentSource;
     }
     playModalImg.alt = `${playModalAltBase || playModalTitle?.textContent || '尝试'} 第 ${playModalIndex + 1} 张`;
@@ -791,6 +807,9 @@
       track.style.transform = `translateX(-${galleryIndex * 100}%)`;
       if (prevButton) prevButton.disabled = galleryIndex === 0;
       if (nextButton) nextButton.disabled = galleryIndex >= slides.length - 1;
+      gallery.querySelectorAll('.work-gallery-youtube-link').forEach((link) => {
+        link.hidden = !slides[galleryIndex]?.querySelector('[data-youtube-player]');
+      });
     };
     const goToGallery = (nextIndex) => {
       const slides = getGallerySlides();
@@ -827,16 +846,17 @@
       galleryDeltaX = event.clientX - galleryStartX;
       const deltaY = event.clientY - galleryStartY;
       if (Math.abs(galleryDeltaX) < 8 || Math.abs(galleryDeltaX) < Math.abs(deltaY)) return;
+      if (event.cancelable) event.preventDefault();
       if (!galleryDidSwipe) {
         try { viewport.setPointerCapture(galleryPointerId); } catch (error) {}
       }
       galleryDidSwipe = true;
       track.style.transition = 'none';
       track.style.transform = `translateX(calc(-${galleryIndex * 100}% + ${galleryDeltaX}px))`;
-    }, { passive: true });
+    }, { passive: false });
     const endGallerySwipe = (event) => {
       if (galleryPointerId !== event.pointerId) return;
-      const threshold = Math.max(56, (viewport?.clientWidth || 0) * .08);
+      const threshold = Math.max(38, (viewport?.clientWidth || 0) * .045);
       if (galleryDeltaX <= -threshold) goToGallery(galleryIndex + 1);
       else if (galleryDeltaX >= threshold) goToGallery(galleryIndex - 1);
       else syncGallery();
@@ -849,6 +869,9 @@
     };
     viewport?.addEventListener('pointerup', endGallerySwipe);
     viewport?.addEventListener('pointercancel', endGallerySwipe);
+    viewport?.addEventListener('dragstart', (event) => {
+      event.preventDefault();
+    });
     viewport?.addEventListener('lostpointercapture', () => {
       viewport?.classList.remove('is-dragging');
       galleryPointerId = null;
@@ -874,9 +897,17 @@
   });
   document.querySelectorAll('[data-youtube-player]').forEach((player) => {
     const playButton = player.querySelector('[data-youtube-play]');
+    const videoId = player.dataset.youtubeId;
+    if (!videoId) return;
+    const youtubeLink = document.createElement('a');
+    youtubeLink.className = 'youtube-watch-link work-gallery-youtube-link';
+    youtubeLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+    youtubeLink.target = '_blank';
+    youtubeLink.rel = 'noopener noreferrer';
+    youtubeLink.textContent = '在 YouTube 中观看';
+    youtubeLink.hidden = true;
+    player.closest('[data-work-gallery]')?.appendChild(youtubeLink);
     playButton?.addEventListener('click', () => {
-      const videoId = player.dataset.youtubeId;
-      if (!videoId) return;
       const iframe = document.createElement('iframe');
       const pageOrigin = window.location.origin && window.location.origin !== 'null'
         ? `&origin=${encodeURIComponent(window.location.origin)}`
