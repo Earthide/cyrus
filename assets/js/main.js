@@ -1,4 +1,25 @@
 (() => {
+  const playCardPins = [...document.querySelectorAll(".play-card-pin")];
+  const playPinVariants = [
+    "silver",
+    "blue-frosted",
+    "blue-glossy",
+    "silver",
+    "blue-frosted"
+  ];
+
+  for (let i = playPinVariants.length - 1; i > 0; i -= 1) {
+    const randomIndex = Math.floor(Math.random() * (i + 1));
+    [playPinVariants[i], playPinVariants[randomIndex]] = [
+      playPinVariants[randomIndex],
+      playPinVariants[i]
+    ];
+  }
+
+  playCardPins.forEach((pin, index) => {
+    pin.dataset.pinVariant = playPinVariants[index % playPinVariants.length];
+  });
+
   const stage = document.querySelector('.desktop-stage');
   const desktopFrame = document.querySelector('.desktop-bg');
   const draggables = [...document.querySelectorAll('[data-draggable], .desktop-window')];

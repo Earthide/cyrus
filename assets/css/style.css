@@ -5523,3 +5523,219 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
     margin-top: 26px;
   }
 }
+
+/* Blue acrylic pins hold the five playground photo cards in place. */
+.play-card .play-card-pin {
+  position: absolute;
+  left: var(--play-pin-x, 50%);
+  top: var(--play-pin-y, -11px);
+  z-index: 12;
+  display: block;
+  width: clamp(29px, 2.5vw, 37px);
+  aspect-ratio: 1;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter:
+    drop-shadow(0 5px 5px rgba(27,39,92,.22))
+    drop-shadow(0 0 8px rgba(49,92,255,.2));
+  transform: translateX(-50%) rotate(var(--play-pin-rot, 0deg));
+  transform-origin: 50% 66%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.play-card .play-card-pin[data-pin-variant="silver"] {
+  background-image: url("../../other/f494d38ea6f7f0ce32b7d313c038f40e.png");
+}
+
+.play-card .play-card-pin[data-pin-variant="blue-frosted"] {
+  background-image: url("../../other/blue-pushpin-frosted-acrylic.png");
+}
+
+.play-card .play-card-pin[data-pin-variant="blue-glossy"] {
+  background-image: url("../../other/blue-pushpin.png");
+}
+.play-board .card-a {
+  --play-pin-x: 21%;
+  --play-pin-rot: -8deg;
+}
+.play-board .card-b {
+  --play-pin-x: 76%;
+  --play-pin-rot: 7deg;
+}
+.play-board .card-c {
+  --play-pin-x: 51%;
+  --play-pin-y: -13px;
+  --play-pin-rot: -3deg;
+}
+.play-board .card-d {
+  --play-pin-x: 23%;
+  --play-pin-rot: 6deg;
+}
+.play-board .card-e {
+  --play-pin-x: 73%;
+  --play-pin-rot: -6deg;
+}
+
+@media (max-width: 900px) {
+  .play-card .play-card-pin {
+    top: -10px;
+    width: clamp(25px, 6vw, 31px);
+  }
+}
+
+/* Loose button findings scattered between the playground photo cards. */
+.play-button-scatter {
+  position: absolute;
+  inset: 0;
+  z-index: auto;
+  pointer-events: none;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.play-button-scatter img {
+  position: absolute;
+  z-index: var(--button-z, 4);
+  display: block;
+  width: var(--button-size, 48px);
+  height: auto;
+  filter:
+    drop-shadow(0 4px 6px rgba(28, 39, 78, .14))
+    drop-shadow(0 10px 14px rgba(28, 39, 78, .08));
+  transform: rotate(var(--button-rotate, 0deg));
+  transform-origin: center;
+  user-select: none;
+}
+
+.play-button-scatter img:nth-child(1) {
+  left: -3.5%;
+  top: 9%;
+  --button-size: clamp(48px, 5.4vw, 66px);
+  --button-rotate: -16deg;
+  --button-z: 9;
+}
+
+.play-button-scatter img:nth-child(2) {
+  left: 45%;
+  top: -7%;
+  --button-size: clamp(34px, 4vw, 48px);
+  --button-rotate: 18deg;
+}
+
+.play-button-scatter img:nth-child(3) {
+  left: 60%;
+  top: 8%;
+  --button-size: clamp(42px, 4.7vw, 58px);
+  --button-rotate: -12deg;
+  --button-z: 10;
+}
+
+.play-button-scatter img:nth-child(4) {
+  right: 13%;
+  top: -9%;
+  --button-size: clamp(47px, 5.5vw, 68px);
+  --button-rotate: 10deg;
+}
+
+.play-button-scatter img:nth-child(5) {
+  left: -2%;
+  top: 43%;
+  --button-size: clamp(39px, 4.7vw, 57px);
+  --button-rotate: 14deg;
+  --button-z: 10;
+}
+
+.play-button-scatter img:nth-child(6) {
+  right: -2.6%;
+  top: 39%;
+  --button-size: clamp(37px, 4.4vw, 54px);
+  --button-rotate: -9deg;
+}
+
+.play-button-scatter img:nth-child(7) {
+  left: 55%;
+  top: 42%;
+  --button-size: clamp(56px, 6.8vw, 82px);
+  --button-rotate: -18deg;
+  --button-z: 10;
+}
+
+.play-button-scatter img:nth-child(8) {
+  left: 59%;
+  top: 57%;
+  --button-size: clamp(29px, 3.5vw, 42px);
+  --button-rotate: 24deg;
+}
+
+.play-button-scatter img:nth-child(9) {
+  left: 43%;
+  bottom: -5%;
+  --button-size: clamp(42px, 5vw, 60px);
+  --button-rotate: -11deg;
+  --button-z: 10;
+}
+
+.play-button-scatter img:nth-child(10) {
+  left: 17%;
+  bottom: -10%;
+  --button-size: clamp(53px, 6.6vw, 80px);
+  --button-rotate: 13deg;
+}
+
+.play-button-scatter img:nth-child(11) {
+  right: 24%;
+  bottom: -3%;
+  --button-size: clamp(34px, 4.1vw, 50px);
+  --button-rotate: -21deg;
+  --button-z: 10;
+}
+
+.play-button-scatter img:nth-child(12) {
+  right: -6%;
+  bottom: 16%;
+  --button-size: clamp(68px, 8.2vw, 98px);
+  --button-rotate: 9deg;
+}
+
+.play-button-scatter img:nth-child(13) {
+  right: 5%;
+  bottom: -8%;
+  --button-size: clamp(31px, 3.8vw, 46px);
+  --button-rotate: 20deg;
+  --button-z: 10;
+}
+
+.play-button-scatter img:nth-child(14) {
+  left: -3%;
+  bottom: 10%;
+  --button-size: clamp(40px, 4.8vw, 58px);
+  --button-rotate: -20deg;
+}
+
+.play-board.is-detail-open .play-button-scatter {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 900px) {
+  .play-button-scatter img {
+    display: none;
+  }
+
+  .play-button-scatter img:nth-child(1),
+  .play-button-scatter img:nth-child(4),
+  .play-button-scatter img:nth-child(6),
+  .play-button-scatter img:nth-child(9),
+  .play-button-scatter img:nth-child(13) {
+    display: block;
+    width: min(var(--button-size), 42px);
+  }
+}
+
+@media (max-width: 620px) {
+  .play-button-scatter img:nth-child(4),
+  .play-button-scatter img:nth-child(9) {
+    display: none;
+  }
+}
