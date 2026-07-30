@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>这有山 AR庙会 | 南春希</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260731-header-segment">
 </head>
-<body class="work-detail-page" id="work-top">
+<body class="work-detail-page work-02-page" id="work-top">
   <header class="desktop-bar reference-header">
     <a class="brand" href="../index.html#home">NAN CHUNXI</a>
     <div class="language-switch" aria-label="Language"><button type="button" data-lang="en" data-tooltip="2.0版本更新">EN</button><button class="is-active" type="button" data-lang="zh">中文</button></div>
@@ -34,16 +34,13 @@
         <p class="work-long-description">围绕这有山庙会场景设计移动端 AR 互动体验，将敲木鱼集功德、摇签祈福和山城探索打卡串联为节庆体验，引导用户在线上线下之间完成互动与分享。</p>
       </div>
       <div class="work-long-images">
-        <div class="work-long-weixin-video">
-          <iframe
-            src="https://weixin.qq.com/sph/AIjnHt5Qir"
-            title="这有山 AR庙会展示视频"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-          <a href="https://weixin.qq.com/sph/AIjnHt5Qir" target="_blank" rel="noopener noreferrer">在微信视频号中打开</a>
-        </div>
         <img src="../assets/images/works/work-02-zheyoushan/zheyoushan-intro.jpg" alt="这有山 AR庙会项目介绍">
+        <a class="work-long-weixin-video" href="https://weixin.qq.com/sph/AIjnHt5Qir" target="_blank" rel="noopener noreferrer" aria-label="观看这有山 AR庙会展示视频">
+          <img src="../assets/images/works/work-02-zheyoushan/zheyoushan-video-cover.jpg" alt="这有山 AR庙会展示视频封面">
+          <span class="work-long-weixin-video-play" aria-hidden="true">
+            <svg viewBox="0 0 64 64"><path d="M25 19.5 46 32 25 44.5Z"></path></svg>
+          </span>
+        </a>
         <img src="../assets/images/works/work-02-zheyoushan/zheyoushan-story.jpg" alt="这有山 AR庙会完整长图介绍">
       </div>
     </div>
@@ -51,6 +48,13 @@
       <a class="back-top" href="#work-top"><svg class="back-top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg><span>回到顶部</span></a>
     </div>
   </main>
-  <script src="../assets/js/main.js?v=20260730-touch"></script>
+  <div class="work-image-modal" data-gallery-modal aria-hidden="true">
+    <button class="work-image-backdrop" type="button" data-gallery-close aria-label="关闭"></button>
+    <div class="work-image-modal-window" role="dialog" aria-modal="true" aria-label="作品图片查看器">
+      <button class="work-image-close" type="button" data-gallery-close aria-label="关闭"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+      <img src="" alt="" data-gallery-modal-img>
+    </div>
+  </div>
+  <script src="../assets/js/main.js?v=20260731-unified-image-viewer"></script>
 </body>
 </html>

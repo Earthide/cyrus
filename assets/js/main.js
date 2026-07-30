@@ -484,6 +484,71 @@
   let playModalStartX = 0;
   let playModalStartY = 0;
   let playModalDeltaX = 0;
+  let playImageZoom = 1;
+  let playImagePanX = 0;
+  let playImagePanY = 0;
+  let playImageZoomLabel = null;
+  const playImagePointers = new Map();
+  let playImageDragPoint = null;
+  let playImagePinchDistance = 0;
+  let playImagePinchZoom = 1;
+  const applyPlayImageTransform = () => {
+    if (!playModalImg || !playModalGallery) return;
+    playModalImg.style.transform = `translate3d(${playImagePanX}px, ${playImagePanY}px, 0) scale(${playImageZoom})`;
+    playModalGallery.classList.toggle('is-image-panning', playImagePointers.size > 0);
+    if (playImageZoomLabel) playImageZoomLabel.textContent = `${Math.round(playImageZoom * 100)}%`;
+  };
+  const resetPlayImageViewer = () => {
+    playImageZoom = 1;
+    playImagePanX = 0;
+    playImagePanY = 0;
+    playImagePointers.clear();
+    playImageDragPoint = null;
+    playImagePinchDistance = 0;
+    applyPlayImageTransform();
+  };
+  const setPlayImageZoom = (nextZoom, clientX = null, clientY = null) => {
+    if (!playModalGallery) return;
+    const clampedZoom = clamp(nextZoom, .5, 6);
+    if (clientX !== null && clientY !== null) {
+      const rect = playModalGallery.getBoundingClientRect();
+      const pointX = clientX - rect.left - rect.width / 2;
+      const pointY = clientY - rect.top - rect.height / 2;
+      const ratio = clampedZoom / playImageZoom;
+      playImagePanX = pointX - (pointX - playImagePanX) * ratio;
+      playImagePanY = pointY - (pointY - playImagePanY) * ratio;
+    }
+    playImageZoom = clampedZoom;
+    applyPlayImageTransform();
+  };
+  if (playModalGallery && playModalImg) {
+    const playImageToolbar = document.createElement('div');
+    playImageToolbar.className = 'play-image-viewer-toolbar';
+    const createPlayImageButton = (label, ariaLabel, handler) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = label;
+      button.setAttribute('aria-label', ariaLabel);
+      button.addEventListener('click', handler);
+      return button;
+    };
+    playImageToolbar.appendChild(createPlayImageButton('−', '缩小图片', () => setPlayImageZoom(playImageZoom / 1.25)));
+    playImageZoomLabel = createPlayImageButton('100%', '恢复适应窗口', resetPlayImageViewer);
+    playImageZoomLabel.className = 'play-image-viewer-percent';
+    playImageToolbar.appendChild(playImageZoomLabel);
+    playImageToolbar.appendChild(createPlayImageButton('+', '放大图片', () => setPlayImageZoom(playImageZoom * 1.25)));
+    playImageToolbar.appendChild(createPlayImageButton('适应', '使图片适应窗口', resetPlayImageViewer));
+    playModalGallery.appendChild(playImageToolbar);
+    playModalGallery.addEventListener('wheel', (event) => {
+      if (!playModalFocused || playModalGallery.classList.contains('is-video')) return;
+      event.preventDefault();
+      setPlayImageZoom(playImageZoom * Math.exp(-event.deltaY * .0015), event.clientX, event.clientY);
+    }, { passive: false });
+    playModalGallery.addEventListener('dblclick', (event) => {
+      if (!playModalFocused || playModalGallery.classList.contains('is-video') || event.target.closest('button')) return;
+      setPlayImageZoom(playImageZoom > 1.01 ? 1 : 2.5, event.clientX, event.clientY);
+    });
+  }
   playModalImg?.addEventListener('load', () => {
     playModalGallery?.classList.toggle(
       'is-portrait',
@@ -491,6 +556,12 @@
     );
   });
   const getPlayYouTubeId = (src) => src?.startsWith('youtube:') ? src.slice(8).trim() : '';
+  const externalVideoWatchLinks = {
+    '5GRfVoczREE': 'https://www.bilibili.com/video/BV1Pk346UE93/?spm_id_from=333.1387.homepage.video_card.click',
+    'HQq8f8gzghM': 'https://www.bilibili.com/video/BV1sk346UEnp/?spm_id_from=333.1387.homepage.video_card.click',
+    'PBkbnYkJaHo': 'https://www.bilibili.com/video/BV1Ay3467EZc/?spm_id_from=333.1387.homepage.video_card.click'
+  };
+  const getExternalVideoWatchLink = (videoId) => externalVideoWatchLinks[videoId] || '';
   const getPlaySourceThumb = (src) => {
     const videoId = getPlayYouTubeId(src);
     return videoId ? `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg` : src;
@@ -506,14 +577,17 @@
     playModalIndex = Math.min(Math.max(playModalIndex, 0), Math.max(playModalSources.length - 1, 0));
     const currentSource = playModalSources[playModalIndex] || '';
     const videoId = getPlayYouTubeId(currentSource);
+    resetPlayImageViewer();
     if (videoId && playModalVideo) {
       playModalImg.hidden = true;
       playModalImg.removeAttribute('src');
       playModalVideo.hidden = false;
       playModalVideo.src = getPlayYouTubeEmbed(videoId);
       if (playModalYouTubeLink) {
+        const externalWatchLink = getExternalVideoWatchLink(videoId);
         playModalYouTubeLink.hidden = false;
-        playModalYouTubeLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+        playModalYouTubeLink.href = externalWatchLink || `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+        playModalYouTubeLink.textContent = externalWatchLink ? '跳转 Bilibili 观看' : '在 YouTube 中观看';
       }
     } else {
       if (playModalVideo) {
@@ -530,6 +604,7 @@
     }
     playModalImg.alt = `${playModalAltBase || playModalTitle?.textContent || '尝试'} 第 ${playModalIndex + 1} 张`;
     playModalGallery.classList.toggle('is-video', Boolean(videoId));
+    playModalGallery.classList.toggle('is-image-viewer', playModalFocused && !videoId);
     if (playModalPrev) playModalPrev.disabled = !playModalFocused || playModalSources.length <= 1 || playModalIndex === 0;
     if (playModalNext) playModalNext.disabled = !playModalFocused || playModalSources.length <= 1 || playModalIndex >= playModalSources.length - 1;
     playModalGallery.classList.toggle('has-multiple', playModalFocused && playModalSources.length > 1);
@@ -598,6 +673,7 @@
   const playDetailButtonScatter = document.querySelector('[data-play-detail-buttons]');
   const playgroundMascot = document.querySelector('.playground-mascot');
   const playgroundBoard = document.querySelector('.play-board');
+  const playNoteWidget = document.querySelector('[data-play-note-widget]');
   const playDetailButtonAssets = [
     './assets/images/decorations/2ea49b145f1ed23a4e46421911221848.png',
     './assets/images/decorations/6f7f990a3e0911a01982bf48dd091557.png',
@@ -789,6 +865,99 @@
   playgroundMascot?.addEventListener('animationend', () => {
     playgroundMascot.classList.remove('is-driving');
   });
+  if (playNoteWidget) {
+    const playNoteSlots = [...playNoteWidget.querySelectorAll('[data-play-note-slot]')];
+    const playNoteArtworkSources = [
+      './assets/images/playground/note-painting-01.png',
+      './assets/images/playground/note-painting-02.png',
+      './assets/images/playground/painting-gallery-03.png',
+      './assets/images/playground/painting-gallery-04.png',
+      './assets/images/playground/painting-gallery-05.png',
+      './assets/images/playground/painting-gallery-06.png',
+      './assets/images/playground/painting-gallery-07.png',
+      './assets/images/playground/painting-gallery-08.png',
+      './assets/images/playground/painting-gallery-09.png',
+      './assets/images/playground/painting-gallery-10.png',
+      './assets/images/playground/painting-gallery-11.png'
+    ];
+    const playNotePairs = [
+      [playNoteArtworkSources[0], playNoteArtworkSources[1]]
+    ];
+    let playNotePairIndex = 0;
+    let playNotePointerId = null;
+    let playNoteStartX = 0;
+    let playNoteStartY = 0;
+    let playNoteMoved = false;
+    const syncPlayNoteWidget = () => {
+      const pair = playNotePairs[playNotePairIndex];
+      playNoteWidget.classList.remove('is-switching');
+      void playNoteWidget.offsetWidth;
+      playNoteSlots.forEach((slot, index) => {
+        const img = slot.querySelector('img');
+        const source = pair[index] || '';
+        slot.dataset.playNoteSource = source;
+        if (img) img.src = source;
+      });
+      playNoteWidget.classList.add('is-switching');
+    };
+    playNoteSlots.forEach((slot, index) => {
+      slot.dataset.playNoteSource = playNotePairs[0][index];
+      slot.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!playModal || !playModalTitle || !playModalImg) return;
+        playModalTitle.textContent = 'PAINTINGS';
+        playModalAltBase = slot.querySelector('img')?.alt || '绘画作品';
+        if (playModalDesc) playModalDesc.textContent = '';
+        playModalSources = [...playNoteArtworkSources];
+        playModalIndex = Math.max(0, playNoteArtworkSources.indexOf(slot.dataset.playNoteSource));
+        playModalFocused = true;
+        playModalStack?.replaceChildren();
+        syncPlayModal();
+        playModal.classList.add('is-open');
+        playModal.setAttribute('aria-hidden', 'false');
+      });
+    });
+    playNoteWidget.addEventListener('click', (event) => {
+      if (event.target.closest('[data-play-note-slot]')) return;
+      if (playNoteWidget.dataset.wasDragged === 'true') {
+        playNoteWidget.dataset.wasDragged = 'false';
+        return;
+      }
+      playNotePairIndex = (playNotePairIndex + 1) % playNotePairs.length;
+      syncPlayNoteWidget();
+    });
+    playNoteWidget.addEventListener('pointerdown', (event) => {
+      if (event.target.closest('[data-play-note-slot]')) return;
+      if (event.button !== undefined && event.button !== 0) return;
+      playNotePointerId = event.pointerId;
+      playNoteStartX = event.clientX;
+      playNoteStartY = event.clientY;
+      playNoteMoved = false;
+      playNoteWidget.classList.remove('is-rebounding');
+      try { playNoteWidget.setPointerCapture(playNotePointerId); } catch (error) {}
+    });
+    playNoteWidget.addEventListener('pointermove', (event) => {
+      if (playNotePointerId !== event.pointerId) return;
+      const deltaX = clamp(event.clientX - playNoteStartX, -42, 42);
+      const deltaY = clamp(event.clientY - playNoteStartY, -34, 34);
+      if (Math.hypot(deltaX, deltaY) > 5) playNoteMoved = true;
+      playNoteWidget.style.setProperty('--note-drag-x', `${deltaX}px`);
+      playNoteWidget.style.setProperty('--note-drag-y', `${deltaY}px`);
+      if (event.cancelable) event.preventDefault();
+    }, { passive: false });
+    const releasePlayNoteWidget = (event) => {
+      if (playNotePointerId !== event.pointerId) return;
+      if (playNoteMoved) playNoteWidget.dataset.wasDragged = 'true';
+      try { if (playNoteWidget.hasPointerCapture(playNotePointerId)) playNoteWidget.releasePointerCapture(playNotePointerId); } catch (error) {}
+      playNotePointerId = null;
+      playNoteWidget.classList.add('is-rebounding');
+      playNoteWidget.style.setProperty('--note-drag-x', '0px');
+      playNoteWidget.style.setProperty('--note-drag-y', '0px');
+    };
+    playNoteWidget.addEventListener('pointerup', releasePlayNoteWidget);
+    playNoteWidget.addEventListener('pointercancel', releasePlayNoteWidget);
+  }
   playDetailViewport?.addEventListener('pointerdown', (event) => {
     if (!playDetailFocused) return;
     if (event.button !== undefined && event.button !== 0) return;
@@ -835,6 +1004,20 @@
     if (!playModalFocused) return;
     if (event.target.closest('button')) return;
     if (event.button !== undefined && event.button !== 0) return;
+    if (!playModalGallery.classList.contains('is-video')) {
+      playImagePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      try { playModalGallery.setPointerCapture(event.pointerId); } catch (error) {}
+      if (playImagePointers.size === 1) {
+        playImageDragPoint = { x: event.clientX, y: event.clientY };
+      } else if (playImagePointers.size === 2) {
+        const points = [...playImagePointers.values()];
+        playImagePinchDistance = Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
+        playImagePinchZoom = playImageZoom;
+        playImageDragPoint = null;
+      }
+      applyPlayImageTransform();
+      return;
+    }
     playModalPointerId = event.pointerId;
     playModalStartX = event.clientX;
     playModalStartY = event.clientY;
@@ -842,10 +1025,41 @@
     try { playModalGallery.setPointerCapture(playModalPointerId); } catch (error) {}
   });
   playModalGallery?.addEventListener('pointermove', (event) => {
+    if (playImagePointers.has(event.pointerId)) {
+      playImagePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (playImagePointers.size === 2) {
+        const points = [...playImagePointers.values()];
+        const distance = Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
+        const centerX = (points[0].x + points[1].x) / 2;
+        const centerY = (points[0].y + points[1].y) / 2;
+        if (playImagePinchDistance > 0) {
+          setPlayImageZoom(playImagePinchZoom * distance / playImagePinchDistance, centerX, centerY);
+        }
+      } else if (playImageDragPoint) {
+        playImagePanX += event.clientX - playImageDragPoint.x;
+        playImagePanY += event.clientY - playImageDragPoint.y;
+        playImageDragPoint = { x: event.clientX, y: event.clientY };
+        applyPlayImageTransform();
+      }
+      if (event.cancelable) event.preventDefault();
+      return;
+    }
     if (playModalPointerId !== event.pointerId) return;
     playModalDeltaX = event.clientX - playModalStartX;
   }, { passive: true });
   const endPlayModalSwipe = (event) => {
+    if (playImagePointers.has(event.pointerId)) {
+      playImagePointers.delete(event.pointerId);
+      if (playImagePointers.size === 1) {
+        const point = [...playImagePointers.values()][0];
+        playImageDragPoint = { x: point.x, y: point.y };
+      } else {
+        playImageDragPoint = null;
+      }
+      playImagePinchDistance = 0;
+      applyPlayImageTransform();
+      return;
+    }
     if (playModalPointerId !== event.pointerId) return;
     const deltaY = event.clientY - playModalStartY;
     const threshold = Math.max(56, (playModalGallery?.clientWidth || 0) * .06);
@@ -872,11 +1086,135 @@
   const gallery = document.querySelector('[data-work-gallery]');
   const galleryModal = document.querySelector('[data-gallery-modal]');
   const galleryModalImg = document.querySelector('[data-gallery-modal-img]');
+  const galleryModalWindow = galleryModal?.querySelector('.work-image-modal-window');
+  let galleryViewer = null;
+  let galleryZoomLabel = null;
+  let galleryZoom = 1;
+  let galleryPanX = 0;
+  let galleryPanY = 0;
+  const galleryViewerPointers = new Map();
+  let galleryDragPoint = null;
+  let galleryPinchDistance = 0;
+  let galleryPinchZoom = 1;
+  const applyGalleryViewerTransform = () => {
+    if (!galleryModalImg || !galleryViewer) return;
+    galleryModalImg.style.transform = `translate3d(${galleryPanX}px, ${galleryPanY}px, 0) scale(${galleryZoom})`;
+    galleryViewer.classList.toggle('is-zoomed', galleryZoom > 1.01);
+    if (galleryZoomLabel) galleryZoomLabel.textContent = `${Math.round(galleryZoom * 100)}%`;
+  };
+  const resetGalleryViewer = () => {
+    galleryZoom = 1;
+    galleryPanX = 0;
+    galleryPanY = 0;
+    galleryViewerPointers.clear();
+    galleryDragPoint = null;
+    galleryPinchDistance = 0;
+    applyGalleryViewerTransform();
+  };
+  const setGalleryZoom = (nextZoom, clientX = null, clientY = null) => {
+    if (!galleryViewer) return;
+    const clampedZoom = clamp(nextZoom, .5, 6);
+    if (clientX !== null && clientY !== null) {
+      const rect = galleryViewer.getBoundingClientRect();
+      const pointX = clientX - rect.left - rect.width / 2;
+      const pointY = clientY - rect.top - rect.height / 2;
+      const ratio = clampedZoom / galleryZoom;
+      galleryPanX = pointX - (pointX - galleryPanX) * ratio;
+      galleryPanY = pointY - (pointY - galleryPanY) * ratio;
+    } else if (clampedZoom <= 1) {
+      galleryPanX = 0;
+      galleryPanY = 0;
+    }
+    galleryZoom = clampedZoom;
+    applyGalleryViewerTransform();
+  };
+  if (galleryModalWindow && galleryModalImg) {
+    galleryModalWindow.classList.add('is-zoom-viewer');
+    galleryViewer = document.createElement('div');
+    galleryViewer.className = 'work-image-viewer';
+    galleryModalImg.before(galleryViewer);
+    galleryViewer.appendChild(galleryModalImg);
+    const toolbar = document.createElement('div');
+    toolbar.className = 'work-image-viewer-toolbar';
+    const createViewerButton = (label, ariaLabel, handler) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = label;
+      button.setAttribute('aria-label', ariaLabel);
+      button.addEventListener('click', handler);
+      return button;
+    };
+    toolbar.appendChild(createViewerButton('−', '缩小图片', () => setGalleryZoom(galleryZoom / 1.25)));
+    galleryZoomLabel = document.createElement('button');
+    galleryZoomLabel.type = 'button';
+    galleryZoomLabel.className = 'work-image-viewer-percent';
+    galleryZoomLabel.setAttribute('aria-label', '恢复原始缩放');
+    galleryZoomLabel.addEventListener('click', resetGalleryViewer);
+    toolbar.appendChild(galleryZoomLabel);
+    toolbar.appendChild(createViewerButton('+', '放大图片', () => setGalleryZoom(galleryZoom * 1.25)));
+    toolbar.appendChild(createViewerButton('适应', '使图片适应窗口', resetGalleryViewer));
+    galleryModalWindow.appendChild(toolbar);
+    galleryViewer.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      setGalleryZoom(galleryZoom * Math.exp(-event.deltaY * .0015), event.clientX, event.clientY);
+    }, { passive: false });
+    galleryViewer.addEventListener('dblclick', (event) => {
+      setGalleryZoom(galleryZoom > 1.01 ? 1 : 2.5, event.clientX, event.clientY);
+    });
+    galleryViewer.addEventListener('pointerdown', (event) => {
+      if (event.button !== undefined && event.button !== 0) return;
+      galleryViewerPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      try { galleryViewer.setPointerCapture(event.pointerId); } catch (error) {}
+      if (galleryViewerPointers.size === 1) {
+        galleryDragPoint = { x: event.clientX, y: event.clientY };
+      } else if (galleryViewerPointers.size === 2) {
+        const points = [...galleryViewerPointers.values()];
+        galleryPinchDistance = Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
+        galleryPinchZoom = galleryZoom;
+        galleryDragPoint = null;
+      }
+    });
+    galleryViewer.addEventListener('pointermove', (event) => {
+      if (!galleryViewerPointers.has(event.pointerId)) return;
+      galleryViewerPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (galleryViewerPointers.size === 2) {
+        const points = [...galleryViewerPointers.values()];
+        const distance = Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
+        const centerX = (points[0].x + points[1].x) / 2;
+        const centerY = (points[0].y + points[1].y) / 2;
+        if (galleryPinchDistance > 0) {
+          setGalleryZoom(galleryPinchZoom * distance / galleryPinchDistance, centerX, centerY);
+        }
+        if (event.cancelable) event.preventDefault();
+      } else if (galleryDragPoint) {
+        galleryPanX += event.clientX - galleryDragPoint.x;
+        galleryPanY += event.clientY - galleryDragPoint.y;
+        galleryDragPoint = { x: event.clientX, y: event.clientY };
+        applyGalleryViewerTransform();
+        if (event.cancelable) event.preventDefault();
+      }
+    }, { passive: false });
+    const releaseGalleryViewerPointer = (event) => {
+      galleryViewerPointers.delete(event.pointerId);
+      if (galleryViewerPointers.size === 1) {
+        const point = [...galleryViewerPointers.values()][0];
+        galleryDragPoint = { x: point.x, y: point.y };
+      } else {
+        galleryDragPoint = null;
+      }
+      galleryPinchDistance = 0;
+    };
+    galleryViewer.addEventListener('pointerup', releaseGalleryViewerPointer);
+    galleryViewer.addEventListener('pointercancel', releaseGalleryViewerPointer);
+    galleryModalImg.addEventListener('dragstart', (event) => event.preventDefault());
+    resetGalleryViewer();
+  }
   const openGalleryModal = (button) => {
     if (!galleryModal || !galleryModalImg) return;
-    const img = button.querySelector('img');
+    const img = button.matches?.('img') ? button : button.querySelector('img');
     galleryModalImg.src = button.dataset.galleryImage || img?.src || '';
     galleryModalImg.alt = img?.alt || '';
+    resetGalleryViewer();
     galleryModal.classList.add('is-open');
     galleryModal.setAttribute('aria-hidden', 'false');
   };
@@ -1055,16 +1393,30 @@
     if (button.closest('[data-work-gallery]')) return;
     button.addEventListener('click', () => openGalleryModal(button));
   });
+  document.querySelectorAll('.work-detail-long .work-long-images > img').forEach((img) => {
+    img.classList.add('is-work-image-zoomable');
+    img.tabIndex = 0;
+    img.setAttribute('role', 'button');
+    img.setAttribute('aria-label', `放大查看${img.alt || '作品图片'}`);
+    img.addEventListener('click', () => openGalleryModal(img));
+    img.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openGalleryModal(img);
+      }
+    });
+  });
   document.querySelectorAll('[data-youtube-player]').forEach((player) => {
     const playButton = player.querySelector('[data-youtube-play]');
     const videoId = player.dataset.youtubeId;
     if (!videoId) return;
     const youtubeLink = document.createElement('a');
+    const externalWatchLink = getExternalVideoWatchLink(videoId);
     youtubeLink.className = 'youtube-watch-link work-gallery-youtube-link';
-    youtubeLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+    youtubeLink.href = externalWatchLink || `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
     youtubeLink.target = '_blank';
     youtubeLink.rel = 'noopener noreferrer';
-    youtubeLink.textContent = '在 YouTube 中观看';
+    youtubeLink.textContent = externalWatchLink ? '跳转 Bilibili 观看' : '在 YouTube 中观看';
     youtubeLink.hidden = true;
     player.closest('[data-work-gallery]')?.appendChild(youtubeLink);
     playButton?.addEventListener('click', () => {
@@ -1083,6 +1435,7 @@
   });
   document.querySelectorAll('[data-gallery-close]').forEach((button) => {
     button.addEventListener('click', () => {
+      resetGalleryViewer();
       galleryModal?.classList.remove('is-open');
       galleryModal?.setAttribute('aria-hidden', 'true');
     });
@@ -1107,6 +1460,7 @@
     });
     const cards = allCards.filter((card) => !card.classList.contains('catshroom-pack-card'));
     const cardSlider = stage.querySelector('[data-card-slider]');
+    const narrowCardQuery = window.matchMedia('(max-width: 760px)');
     let cardOffset = 0;
     let cardTimer = 0;
     let cardPointerId = null;
@@ -1133,16 +1487,28 @@
       cardSlider.style.setProperty('--slider-cue-left', `${cueX.toFixed(2)}px`);
       cardSlider.style.setProperty('--slider-cue-top', `${cueY.toFixed(2)}px`);
     };
-    const setCardOffsetFromSlider = (clientX, startX = null, startOffset = cardOffset) => {
+    const setCardOffsetFromSlider = (
+      clientX,
+      startX = null,
+      startOffset = cardOffset,
+      stepDistance = 96,
+      continuous = false
+    ) => {
       if (!cardSlider || !cards.length) return;
       if (startX === null) {
         const rect = cardSlider.getBoundingClientRect();
         const progress = clamp((clientX - rect.left) / Math.max(rect.width, 1), 0, 1);
         cardOffset = wrapCardIndex(Math.round(progress * (cards.length - 1)));
       } else {
-        const draggedSteps = Math.round((clientX - startX) / 34);
+        const rawSteps = (startX - clientX) / stepDistance;
+        const dampedSteps = Math.sign(rawSteps) * (Math.pow(1 + Math.abs(rawSteps), .86) - 1);
+        const draggedSteps = continuous ? dampedSteps : Math.round(dampedSteps);
         cardOffset = wrapCardIndex(startOffset + draggedSteps);
       }
+      renderCards();
+    };
+    const settleCardOffset = () => {
+      cardOffset = wrapCardIndex(Math.round(cardOffset));
       renderCards();
     };
     const renderCards = () => {
@@ -1178,7 +1544,7 @@
     const resetCards = () => {
       packOpening = false;
       cardDidDrag = false;
-      stage.classList.remove('has-active', 'is-pack-active', 'is-pack-open');
+      stage.classList.remove('has-active', 'is-pack-active', 'is-pack-open', 'is-mobile-pack-notice');
       allCards.forEach((card) => {
         card.classList.remove('is-active', 'is-pulled', 'is-pulled-settled', 'is-tearing', 'is-pack-leaving', 'is-hovered');
         card.style.removeProperty('--pack-swipe-x');
@@ -1264,6 +1630,8 @@
         try { if (cardSlider.hasPointerCapture(sliderPointerId)) cardSlider.releasePointerCapture(sliderPointerId); } catch (error) {}
         sliderPointerId = null;
         cardSlider.classList.remove('is-sliding');
+        stage.classList.remove('is-dragging');
+        settleCardOffset();
         window.setTimeout(() => { cardDidDrag = false; }, 120);
         startCardTimer();
       };
@@ -1277,13 +1645,14 @@
         sliderStartOffset = cardOffset;
         cardDidDrag = true;
         cardSlider.classList.add('is-sliding');
+        stage.classList.add('is-dragging');
         window.clearInterval(cardTimer);
         try { cardSlider.setPointerCapture(sliderPointerId); } catch (error) {}
       });
       cardSlider.addEventListener('pointermove', (event) => {
         if (sliderPointerId !== event.pointerId) return;
         event.preventDefault();
-        setCardOffsetFromSlider(event.clientX, sliderStartX, sliderStartOffset);
+        setCardOffsetFromSlider(event.clientX, sliderStartX, sliderStartOffset, 104, true);
       }, { passive: false });
       cardSlider.addEventListener('pointerup', endSliderDrag);
       cardSlider.addEventListener('pointercancel', endSliderDrag);
@@ -1318,6 +1687,13 @@
       card.addEventListener('click', (event) => {
         event.stopPropagation();
         if (cardDidDrag) return;
+        if (narrowCardQuery.matches && card.classList.contains('catshroom-pack-card')) {
+          resetCards();
+          window.clearInterval(cardTimer);
+          void stage.offsetWidth;
+          stage.classList.add('is-mobile-pack-notice');
+          return;
+        }
         if (stage.classList.contains('is-pack-open') && card.classList.contains('is-pulled')) {
           const showingFront = card.classList.toggle('is-flipped');
           card.setAttribute('aria-pressed', showingFront ? 'true' : 'false');
@@ -1375,6 +1751,21 @@
       const targetCard = event.target.closest('[data-flip-card]');
       const activePack = targetCard?.classList.contains('catshroom-pack-card') && targetCard.classList.contains('is-active');
       if (event.button !== undefined && event.button !== 0) return;
+      if (
+        !stage.classList.contains('has-active') &&
+        !targetCard?.classList.contains('catshroom-pack-card') &&
+        !event.target.closest('[data-card-slider]')
+      ) {
+        cardPointerId = event.pointerId;
+        cardStartOffset = cardOffset;
+        cardStartX = event.clientX;
+        cardStartY = event.clientY;
+        cardDeltaX = 0;
+        cardDidDrag = false;
+        packSwipeCard = null;
+        window.clearInterval(cardTimer);
+        return;
+      }
       if (!activePack) return;
       if (targetCard.classList.contains('is-pack-leaving') || packOpening) return;
       event.preventDefault();
@@ -1413,13 +1804,29 @@
         }
         return;
       }
+      if (Math.abs(cardDeltaX) < 8 || Math.abs(cardDeltaX) <= Math.abs(deltaY)) return;
+      cardDidDrag = true;
+      stage.classList.add('is-dragging');
+      if (event.cancelable) event.preventDefault();
+      try {
+        if (!stage.hasPointerCapture(cardPointerId)) stage.setPointerCapture(cardPointerId);
+      } catch (error) {}
+      setCardOffsetFromSlider(
+        event.clientX,
+        cardStartX,
+        cardStartOffset,
+        narrowCardQuery.matches ? 154 : 132,
+        true
+      );
     }, { passive: false });
     const endCardDrag = (event) => {
       if (cardPointerId !== event.pointerId) return;
+      const wasPackSwipe = Boolean(packSwipeCard);
       stage.classList.remove('is-dragging');
       try {
         const capturedCard = packSwipeCard || event.target.closest('[data-flip-card]');
         if (capturedCard?.hasPointerCapture(cardPointerId)) capturedCard.releasePointerCapture(cardPointerId);
+        if (stage.hasPointerCapture(cardPointerId)) stage.releasePointerCapture(cardPointerId);
       } catch (error) {}
       if (packSwipeCard) {
         packSwipeCard.style.setProperty('--pack-swipe-x', '0px');
@@ -1429,6 +1836,7 @@
       }
       packSwipeCard = null;
       cardPointerId = null;
+      if (!wasPackSwipe && cardDidDrag) settleCardOffset();
       window.setTimeout(() => { cardDidDrag = false; }, 160);
       startCardTimer();
     };
@@ -1466,6 +1874,7 @@
       syncPlayDetailGallery();
       playModal?.classList.remove('is-open');
       playModal?.setAttribute('aria-hidden', 'true');
+      resetGalleryViewer();
       document.querySelector('[data-gallery-modal]')?.classList.remove('is-open');
       document.querySelector('[data-gallery-modal]')?.setAttribute('aria-hidden', 'true');
     }
