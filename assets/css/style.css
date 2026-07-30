@@ -6836,6 +6836,22 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
   transform: rotate(12deg);
 }
 
+.play-note-ticket.is-front::before {
+  content: "my paintings";
+  position: absolute;
+  left: calc(13% + 10px);
+  bottom: calc(9% + 10px);
+  z-index: 4;
+  color: #315cff;
+  font: 700 clamp(8px, .78vw, 11px)/1 "Segoe Print", "Comic Sans MS", cursive;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  transform: rotate(0deg);
+  transform-origin: left bottom;
+  text-shadow: .5px .5px 0 rgba(49,92,255,.14);
+  pointer-events: none;
+}
+
 .play-note-ticket:hover {
   z-index: 4;
   filter: drop-shadow(0 8px 10px rgba(31,46,100,.2));
