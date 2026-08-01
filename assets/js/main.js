@@ -881,7 +881,7 @@
       './assets/images/playground/painting-gallery-11.png'
     ];
     const playNotePairs = [
-      [playNoteArtworkSources[0], playNoteArtworkSources[1]]
+      [playNoteArtworkSources[0]]
     ];
     let playNotePairIndex = 0;
     let playNotePointerId = null;
@@ -893,7 +893,7 @@
       playNoteWidget.classList.remove('is-switching');
       void playNoteWidget.offsetWidth;
       playNoteSlots.forEach((slot, index) => {
-        const img = slot.querySelector('img');
+        const img = slot.querySelector('.play-note-camera-art.is-purple');
         const source = pair[index] || '';
         slot.dataset.playNoteSource = source;
         if (img) img.src = source;
@@ -902,9 +902,19 @@
     };
     playNoteSlots.forEach((slot, index) => {
       slot.dataset.playNoteSource = playNotePairs[0][index];
+      slot.addEventListener('mouseenter', () => {
+        slot.dataset.playNoteSource = playNoteArtworkSources[1];
+      });
+      slot.addEventListener('mouseleave', () => {
+        slot.dataset.playNoteSource = playNoteArtworkSources[0];
+      });
       slot.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
+        if (playNoteWidget.dataset.wasDragged === 'true') {
+          playNoteWidget.dataset.wasDragged = 'false';
+          return;
+        }
         if (!playModal || !playModalTitle || !playModalImg) return;
         playModalTitle.textContent = 'PAINTINGS';
         playModalAltBase = slot.querySelector('img')?.alt || '绘画作品';
@@ -928,20 +938,22 @@
       syncPlayNoteWidget();
     });
     playNoteWidget.addEventListener('pointerdown', (event) => {
-      if (event.target.closest('[data-play-note-slot]')) return;
       if (event.button !== undefined && event.button !== 0) return;
       playNotePointerId = event.pointerId;
       playNoteStartX = event.clientX;
       playNoteStartY = event.clientY;
       playNoteMoved = false;
       playNoteWidget.classList.remove('is-rebounding');
-      try { playNoteWidget.setPointerCapture(playNotePointerId); } catch (error) {}
     });
     playNoteWidget.addEventListener('pointermove', (event) => {
       if (playNotePointerId !== event.pointerId) return;
       const deltaX = clamp(event.clientX - playNoteStartX, -42, 42);
       const deltaY = clamp(event.clientY - playNoteStartY, -34, 34);
-      if (Math.hypot(deltaX, deltaY) > 5) playNoteMoved = true;
+      if (!playNoteMoved && Math.hypot(deltaX, deltaY) > 5) {
+        playNoteMoved = true;
+        try { playNoteWidget.setPointerCapture(playNotePointerId); } catch (error) {}
+      }
+      if (!playNoteMoved) return;
       playNoteWidget.style.setProperty('--note-drag-x', `${deltaX}px`);
       playNoteWidget.style.setProperty('--note-drag-y', `${deltaY}px`);
       if (event.cancelable) event.preventDefault();
@@ -1393,7 +1405,7 @@
     if (button.closest('[data-work-gallery]')) return;
     button.addEventListener('click', () => openGalleryModal(button));
   });
-  document.querySelectorAll('.work-detail-long .work-long-images > img').forEach((img) => {
+  document.querySelectorAll('body:not(.work-02-page) .work-detail-long .work-long-images > img').forEach((img) => {
     img.classList.add('is-work-image-zoomable');
     img.tabIndex = 0;
     img.setAttribute('role', 'button');
@@ -2093,7 +2105,16 @@
   window.addEventListener('scroll', updateSectionVisibility, { passive: true });
   window.addEventListener('resize', updateSectionVisibility, { passive: true });
 
-  if (location.hash) {
-    history.replaceState(null, '', location.pathname + location.search);
+  const initialSectionId = decodeURIComponent(location.hash.slice(1));
+  const initialSection = initialSectionId ? document.getElementById(initialSectionId) : null;
+  if (initialSection) {
+    const alignInitialSection = () => {
+      initialSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+      updateSectionVisibility();
+    };
+    requestAnimationFrame(() => requestAnimationFrame(alignInitialSection));
+    if (document.readyState !== 'complete') {
+      window.addEventListener('load', alignInitialSection, { once: true });
+    }
   }
 })();
