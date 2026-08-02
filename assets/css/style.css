@@ -8966,3 +8966,647 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
 .play-note-widget.is-switching > .play-note-widget-slot {
   animation: playNoteCameraSwap .28s ease;
 }
+
+/* Work 02 trial: softly carry the first image's coral palette into the pale
+   page without changing the seamless lower edge or any following media. */
+.work-02-page .work-long-image-intro {
+  position: relative;
+  z-index: 1;
+  border-radius: clamp(16px, 1.8vw, 28px) clamp(16px, 1.8vw, 28px) 0 0;
+  box-shadow:
+    0 -26px 66px rgba(230, 136, 105, .2),
+    -20px -4px 46px rgba(244, 171, 139, .12),
+    20px -4px 46px rgba(244, 171, 139, .12);
+}
+
+/* Final cross-page maintenance overrides — 2026-08-02. */
+.desktop-bar::before {
+  top: calc(-48px - env(safe-area-inset-top, 0px));
+  height: calc(100% + 40px + env(safe-area-inset-top, 0px));
+}
+
+.theme-toggle {
+  top: 50%;
+}
+
+.theme-icon-moon svg {
+  transform: translate(1px, -1px) scale(1.08);
+}
+
+@media (max-width: 1040px) {
+  .theme-toggle,
+  .reference-header .theme-toggle {
+    top: 18px;
+  }
+}
+
+.work-detail-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.work-footer-next {
+  flex: 0 0 auto;
+}
+
+.work-summary-description,
+.work-project-description p,
+.work-detail-long .work-long-description {
+  font-size: 15px;
+  line-height: 1.9;
+  font-weight: 400;
+}
+
+.work-project-description strong,
+.work-project-description b,
+.work-summary-description strong,
+.work-summary-description b,
+.work-detail-long .work-long-description strong,
+.work-detail-long .work-long-description b,
+.work-project-description .work-project-meaning {
+  font-weight: 700;
+}
+
+@media (max-width: 620px) {
+  .work-summary-description,
+  .work-project-description p,
+  .work-detail-long .work-long-description {
+    font-size: 14px;
+  }
+}
+
+/* Decode and scale the source bitmap itself instead of preserving a cached,
+   viewport-sized GPU layer when the viewer zooms in. */
+.work-image-modal-window.is-zoom-viewer .work-image-viewer img,
+.work-image-modal.is-shanshui-modal .work-image-modal-window.is-zoom-viewer .work-image-viewer img {
+  image-rendering: auto !important;
+  will-change: auto;
+  backface-visibility: visible;
+  contain: none;
+}
+
+.site-loading-overlay {
+  --asset-progress: 0%;
+  position: fixed;
+  inset: 0;
+  z-index: 30000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: #315cff;
+  background: #f1eee7;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .28s ease, visibility 0s linear .28s;
+}
+
+.site-loading-overlay.is-complete {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.site-loading-card {
+  width: min(360px, calc(100vw - 48px));
+  padding: 22px;
+  border: 1.5px solid #315cff;
+  border-radius: 10px;
+  background: rgba(255,255,255,.58);
+  box-shadow: 0 18px 44px rgba(49,92,255,.16);
+}
+
+.site-loading-card strong,
+.site-loading-card span {
+  display: block;
+}
+
+.site-loading-card strong {
+  margin-bottom: 14px;
+  font-size: 18px;
+}
+
+.site-loading-track {
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid #315cff;
+  border-radius: 999px;
+  background: rgba(255,255,255,.75);
+}
+
+.site-loading-track::before {
+  content: "";
+  display: block;
+  width: var(--asset-progress);
+  height: 100%;
+  background: #315cff;
+  transition: width .18s ease;
+}
+
+.site-loading-card span {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.contact-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+  place-items: center;
+  padding: 24px;
+}
+
+.contact-modal.is-open {
+  display: grid;
+}
+
+body.contact-modal-open {
+  overflow: hidden;
+}
+
+.contact-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(18,23,46,.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.contact-modal-window {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(760px, 92vw);
+  max-height: 90vh;
+  padding: 22px;
+  overflow: hidden;
+  border: 1.5px solid #315cff;
+  border-radius: 10px;
+  color: #315cff;
+  background: #f1eee7;
+  box-shadow: 0 20px 60px rgba(30,48,110,.3);
+}
+
+.contact-modal-window h2 {
+  margin: 0 48px 16px 0;
+  font-size: 22px;
+}
+
+.contact-modal-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1.5px solid #315cff;
+  border-radius: 50%;
+  color: #315cff;
+  background: #fff;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.contact-wechat-window {
+  width: min(430px, 92vw);
+  text-align: center;
+}
+
+.contact-qr-image {
+  display: block;
+  width: min(300px, 72vw);
+  height: auto;
+  margin: 0 auto 16px;
+  border: 10px solid #fff;
+  image-rendering: auto;
+}
+
+.contact-wechat-window p {
+  margin: 0;
+  font-size: 15px;
+}
+
+.contact-pdf-window iframe {
+  display: block;
+  width: 100%;
+  height: min(68vh, 760px);
+  border: 1px solid rgba(49,92,255,.3);
+  background: #fff;
+}
+
+.contact-download-button {
+  display: inline-flex;
+  min-height: 38px;
+  margin-top: 12px;
+  padding: 0 18px;
+  align-items: center;
+  border: 1.5px solid #315cff;
+  border-radius: 7px;
+  color: #fff;
+  background: #315cff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.contact-copy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(28px, env(safe-area-inset-bottom, 0px));
+  z-index: 1400;
+  padding: 11px 18px;
+  border: 1.5px solid #315cff;
+  border-radius: 999px;
+  color: #315cff;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 12px 30px rgba(30,48,110,.22);
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 12px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.contact-copy-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.work-image-modal.is-image-loading .work-image-viewer img {
+  opacity: .25;
+}
+
+.work-image-viewer img {
+  transition: opacity .16s ease;
+}
+
+.about-skills {
+  max-width: 680px;
+  margin-top: 22px;
+  padding: 18px;
+  border: 1.5px solid #315cff;
+  border-radius: 10px;
+  background: rgba(255,255,255,.42);
+  box-shadow: 6px 6px 0 rgba(49,92,255,.13);
+}
+
+.about-skills > strong {
+  display: block;
+  margin-bottom: 12px;
+  color: #315cff;
+  font-size: 17px;
+}
+
+.about-skills > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.about-skills span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #fff;
+  background: #315cff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.about-octopus {
+  display: block;
+  width: clamp(92px, 10vw, 138px);
+  height: auto;
+  margin: 24px 0 0 auto;
+  filter: drop-shadow(0 10px 15px rgba(49,92,255,.2));
+}
+
+@media (max-width: 620px) {
+  .contact-modal {
+    padding: 12px;
+  }
+
+  .contact-modal-window {
+    width: 100%;
+    max-height: 88vh;
+    padding: 16px;
+  }
+
+  .contact-pdf-window iframe {
+    height: 68vh;
+  }
+
+  .about-skills {
+    padding: 14px;
+  }
+}
+
+/* About page follow-up: place Cyrus after the experience timeline. */
+.reference-about > .about-octopus {
+  margin-top: clamp(24px, 4vh, 44px);
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* Keep EN / 中文 / sun / moon on one exact baseline at every breakpoint. */
+.desktop-bar .language-switch,
+.reference-header .language-switch,
+.desktop-bar .theme-toggle,
+.reference-header .theme-toggle {
+  box-sizing: border-box;
+  height: 28px;
+}
+
+.desktop-bar .language-switch button,
+.reference-header .language-switch button,
+.desktop-bar .theme-toggle span,
+.reference-header .theme-toggle span {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0;
+  line-height: 1;
+}
+
+.desktop-bar .language-switch,
+.reference-header .language-switch {
+  border-right: 0;
+}
+
+.desktop-bar .theme-toggle,
+.reference-header .theme-toggle {
+  border-left: 0;
+}
+
+.desktop-bar .theme-icon svg,
+.reference-header .theme-icon svg {
+  margin: 0;
+}
+
+@media (min-width: 1041px) {
+  .desktop-bar .language-switch,
+  .reference-header .language-switch,
+  .desktop-bar .theme-toggle,
+  .reference-header .theme-toggle {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* Wide about page: keep the portrait fixed and align copy with the header About link. */
+@media (min-width: 1041px) {
+  .reference-about {
+    width: auto;
+    margin-left: max(24px, calc((100% - 1090px) / 2));
+    margin-right: clamp(34px, 5.6vw, 86px);
+  }
+
+  .reference-about .about-hero-grid {
+    grid-template-columns: minmax(280px, min(44%, 479.6px)) minmax(0, 1fr);
+  }
+
+  .reference-about .about-copy {
+    padding-right: 0;
+  }
+
+  .reference-about .about-copy p,
+  .reference-about .contact-line {
+    max-width: none;
+  }
+
+  .reference-about .about-timeline {
+    width: 1090px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1040px) {
+  .desktop-bar .language-switch,
+  .reference-header .language-switch,
+  .desktop-bar .theme-toggle,
+  .reference-header .theme-toggle {
+    top: 18px;
+    transform: none;
+  }
+}
+
+/* Restore the title glass to its original visible footprint. The separate
+   fixed strip only covers the normally invisible area above the viewport. */
+.desktop-bar::before,
+.reference-header::before {
+  top: 0;
+  height: calc(100% - 8px);
+}
+
+body.desktop-page::before,
+body.work-detail-page::before,
+body.reference-about-page::before {
+  content: "";
+  position: fixed;
+  left: clamp(12px, 2.6vw, 38px);
+  right: clamp(12px, 2.6vw, 38px);
+  top: calc(-64px - env(safe-area-inset-top, 0px));
+  z-index: 159;
+  height: calc(64px + env(safe-area-inset-top, 0px));
+  border: 1px solid rgba(255,255,255,.42);
+  border-bottom: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.68), rgba(255,255,255,.68)),
+    rgba(241,238,231,.28);
+  pointer-events: none;
+}
+
+/* Match the footer navigation to the top controls: back-to-top stays on the
+   title edge and the next-work button meets the About edge on the right. */
+.work-detail-footer {
+  width: auto;
+  margin-right: max(0px, calc(clamp(34px, 5.6vw, 86px) - ((100vw - min(1090px, calc(100vw - 48px))) / 2)));
+}
+
+.work-detail-gallery .work-detail-footer {
+  margin-right: max(0px, calc(clamp(34px, 5.6vw, 86px) - ((100vw - min(1540px, calc(100vw - 48px))) / 2)));
+}
+
+.work-detail-long .work-detail-footer {
+  margin-right: max(0px, calc(clamp(34px, 5.6vw, 86px) - ((100vw - min(1180px, calc(100vw - 48px))) / 2)));
+}
+
+.work-02-page .work-detail-footer {
+  margin-right: max(0px, calc(clamp(34px, 5.6vw, 86px) - ((100vw - min(1540px, calc(100vw - 48px))) / 2)));
+}
+
+.work-footer-next {
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .work-detail-footer,
+  .work-detail-gallery .work-detail-footer,
+  .work-detail-long .work-detail-footer,
+  .work-02-page .work-detail-footer {
+    margin-right: 0;
+  }
+
+  .work-footer-next {
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+}
+
+/* All six work descriptions share one typographic system. Keep these
+   selectors specific so historical gallery and mobile rules cannot diverge. */
+.work-detail-gallery > .work-summary-description,
+.work-detail-gallery .work-project-description > p,
+.work-detail-long .work-long-intro > .work-long-description {
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.9;
+  font-weight: 400;
+  letter-spacing: .015em;
+}
+
+/* All modal/viewer close controls use the same circular frame. */
+.play-modal-close,
+.work-image-close,
+.contact-modal-close {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1.5px solid #315cff;
+  border-radius: 50%;
+  color: #315cff;
+  background: #fff;
+  line-height: 1;
+  box-shadow: 0 0 18px rgba(49,92,255,.18);
+}
+
+/* About desktop copy: align its right edge with the header's About label. */
+@media (min-width: 901px) {
+  .reference-about .about-copy {
+    box-sizing: border-box;
+    padding-right: 14px;
+  }
+}
+
+/* Segmented-control bug fix: lock both halves as a non-overlapping pair. */
+@media (min-width: 561px) and (max-width: 1040px) {
+  .desktop-bar .language-switch,
+  .reference-header .language-switch {
+    left: auto;
+    right: 92px;
+    width: 96px;
+    grid-template-columns: 48px 48px;
+  }
+
+  .desktop-bar .theme-toggle,
+  .reference-header .theme-toggle {
+    left: auto;
+    right: 20px;
+    width: 72px;
+    grid-template-columns: 36px 36px;
+  }
+}
+
+@media (max-width: 560px) {
+  .desktop-bar .language-switch,
+  .reference-header .language-switch {
+    left: auto;
+    right: 84px;
+    width: 84px;
+    grid-template-columns: 42px 42px;
+  }
+
+  .desktop-bar .theme-toggle,
+  .reference-header .theme-toggle {
+    left: auto;
+    right: 20px;
+    width: 64px;
+    grid-template-columns: 32px 32px;
+  }
+}
+
+.desktop-bar .language-switch button,
+.reference-header .language-switch button,
+.desktop-bar .theme-toggle span,
+.reference-header .theme-toggle span {
+  min-width: 0;
+  max-width: none;
+  overflow: visible;
+}
+
+/* Restore the title glass to its original visible position. */
+.desktop-bar::before,
+.reference-header::before {
+  top: 0;
+  height: calc(100% - 8px);
+}
+
+/* Desktop fix: use explicit adjacent coordinates after removing translateX. */
+@media (min-width: 1041px) {
+  .desktop-bar .language-switch,
+  .reference-header .language-switch {
+    left: calc(50% - 84px);
+    right: auto;
+    width: 96px;
+    grid-template-columns: 48px 48px;
+    transform: translateY(-50%);
+  }
+
+  .desktop-bar .theme-toggle,
+  .reference-header .theme-toggle {
+    left: calc(50% + 12px);
+    right: auto;
+    width: 72px;
+    grid-template-columns: 36px 36px;
+    transform: translateY(-50%);
+  }
+}
+
+/* Final wide-screen edge alignment, after the historical 14px copy inset. */
+@media (min-width: 1041px) {
+  .reference-about .about-copy {
+    padding-right: 0;
+  }
+
+  .reference-about .about-copy p,
+  .reference-about .contact-line,
+  .reference-about .about-skills {
+    max-width: none;
+  }
+}
+
+/* Medium header: two visible rows need the glass to wrap the full title line. */
+@media (min-width: 561px) and (max-width: 1040px) {
+  .desktop-bar,
+  .reference-header {
+    height: 104px;
+    padding: 18px 20px;
+    align-items: flex-start;
+  }
+}
+
+/* Work-card project titles: increase exactly 2px at each existing breakpoint. */
+.works-grid .work-card h2 {
+  font-size: 18px;
+}
+
+@media (max-width: 620px) {
+  .works-grid .work-card h2 {
+    font-size: 16px;
+  }
+}
+
+.works-grid .work-card p {
+  font-size: 15px;
+}

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>南春希 | Desktop Portfolio</title>
   <meta name="description" content="南春希 CMF设计 / 交互设计桌面式作品集。">
-  <link rel="stylesheet" href="./assets/css/style.css?v=20260731-stardust-hover-art">
+  <link rel="stylesheet" href="./assets/css/style.css?v=20260802-work-caption-plus2">
 </head>
 <body class="desktop-page is-booting">
   <div class="boot-screen" data-boot-screen aria-label="页面加载中">
@@ -219,13 +219,32 @@
       <a class="path-button" href="#contact-section">../联系</a>
       <div class="contact-icons contact-info-links">
         <a href="tel:16670961183" aria-label="电话"><span class="phone-icon" aria-hidden="true"><img class="contact-pixel-icon" src="./assets/images/decorations/552bd24aca545d24337c3e7c8b1969ef.png" alt=""></span><small>16670961183</small></a>
-        <a role="button" aria-label="微信"><span class="chat-icon" aria-hidden="true"><img class="contact-pixel-icon" src="./assets/images/decorations/fd93ca98ac3fa2377ae6a7083448a7e5-theme-blue.png" alt=""></span><small>@Earthide</small></a>
-        <a href="./resume.pdf" aria-label="简历"><span class="paper-icon" aria-hidden="true"><img class="contact-pixel-icon" src="./assets/images/decorations/683e5f574c1191de2feba8d09e35bf6e-pdf-blue.png" alt=""></span><small>RESUME PDF</small></a>
+        <a href="#wechat-contact" data-contact-wechat aria-label="微信"><span class="chat-icon" aria-hidden="true"><img class="contact-pixel-icon" src="./assets/images/decorations/fd93ca98ac3fa2377ae6a7083448a7e5-theme-blue.png" alt=""></span><small>@Earthide</small></a>
+        <a href="./resume.pdf" data-contact-pdf aria-label="简历"><span class="paper-icon" aria-hidden="true"><img class="contact-pixel-icon" src="./assets/images/decorations/683e5f574c1191de2feba8d09e35bf6e-pdf-blue.png" alt=""></span><small>RESUME PDF</small></a>
       </div>
       <a class="back-top" href="#home"><svg class="back-top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg><span>回到顶部</span></a>
     </div>
   </section>
   </div>
+  <div class="contact-modal" data-contact-modal="wechat" id="wechat-contact" aria-hidden="true">
+    <button class="contact-modal-backdrop" type="button" data-contact-close aria-label="关闭微信二维码"></button>
+    <div class="contact-modal-window contact-wechat-window" role="dialog" aria-modal="true" aria-labelledby="wechat-modal-title">
+      <button class="contact-modal-close" type="button" data-contact-close aria-label="关闭">×</button>
+      <h2 id="wechat-modal-title">微信二维码</h2>
+      <img class="contact-qr-image" data-loader-ignore loading="lazy" src="./assets/images/decorations/wechat-qr.jpg" alt="微信号 Earthide 二维码">
+      <p>微信号：<strong>Earthide</strong></p>
+    </div>
+  </div>
+  <div class="contact-modal" data-contact-modal="pdf" aria-hidden="true">
+    <button class="contact-modal-backdrop" type="button" data-contact-close aria-label="关闭简历预览"></button>
+    <div class="contact-modal-window contact-pdf-window" role="dialog" aria-modal="true" aria-labelledby="pdf-modal-title">
+      <button class="contact-modal-close" type="button" data-contact-close aria-label="关闭">×</button>
+      <h2 id="pdf-modal-title">个人简历</h2>
+      <iframe src="./resume.pdf#view=FitH" loading="lazy" title="南春希个人简历预览"></iframe>
+      <a class="contact-download-button" href="./resume.pdf" download="南春希-个人简历.pdf">下载 PDF</a>
+    </div>
+  </div>
+  <div class="contact-copy-toast" data-contact-toast role="status" aria-live="polite">微信号 Earthide 已复制成功</div>
   <div class="play-modal" data-play-modal aria-hidden="true">
     <button class="play-modal-backdrop" type="button" data-play-close aria-label="关闭"></button>
     <div class="play-modal-window" role="dialog" aria-modal="true" aria-labelledby="play-modal-title">
@@ -245,7 +264,7 @@
       </div>
     </div>
   </div>
-  <script src="./assets/js/main.js?v=20260731-stardust-hover-art"></script>
+  <script src="./assets/js/main.js?v=20260802-site-maintenance"></script>
 </body>
 </html>
 

@@ -1,4 +1,38 @@
 (() => {
+  const assetImages = [...document.images].filter((img) => !img.hasAttribute('data-loader-ignore'));
+  if (assetImages.length) {
+    const loader = document.createElement('div');
+    loader.className = 'site-loading-overlay';
+    loader.setAttribute('role', 'status');
+    loader.setAttribute('aria-live', 'polite');
+    loader.innerHTML = '<div class="site-loading-card"><strong>加载中</strong><div class="site-loading-track" aria-hidden="true"></div><span>正在加载图片 0%</span></div>';
+    document.body.appendChild(loader);
+    const loaderLabel = loader.querySelector('span');
+    const threshold = Math.max(1, Math.ceil(assetImages.length * .9));
+    let settledImages = 0;
+    let loaderComplete = false;
+    const updateAssetLoader = () => {
+      settledImages += 1;
+      const percent = Math.min(100, Math.round(settledImages / assetImages.length * 100));
+      loader.style.setProperty('--asset-progress', `${percent}%`);
+      if (loaderLabel) loaderLabel.textContent = `正在加载图片 ${percent}%`;
+      if (loaderComplete || settledImages < threshold) return;
+      loaderComplete = true;
+      loader.style.setProperty('--asset-progress', '100%');
+      if (loaderLabel) loaderLabel.textContent = '图片加载完成';
+      loader.classList.add('is-complete');
+      window.setTimeout(() => loader.remove(), 320);
+    };
+    assetImages.forEach((img) => {
+      if (img.complete) {
+        updateAssetLoader();
+      } else {
+        img.addEventListener('load', updateAssetLoader, { once: true });
+        img.addEventListener('error', updateAssetLoader, { once: true });
+      }
+    });
+  }
+
   const playCardPins = [...document.querySelectorAll(".play-card-pin")];
   playCardPins.forEach((pin) => {
     pin.dataset.pinVariant = "silver";
@@ -1095,6 +1129,66 @@
       playModal?.setAttribute('aria-hidden', 'true');
     });
   });
+  const contactModals = [...document.querySelectorAll('[data-contact-modal]')];
+  const contactToast = document.querySelector('[data-contact-toast]');
+  let contactToastTimer = 0;
+  const closeContactModals = () => {
+    contactModals.forEach((modal) => {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    });
+    document.body.classList.remove('contact-modal-open');
+  };
+  const openContactModal = (name) => {
+    const modal = document.querySelector(`[data-contact-modal="${name}"]`);
+    if (!modal) return;
+    closeContactModals();
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('contact-modal-open');
+    modal.querySelector('.contact-modal-close')?.focus();
+  };
+  const showContactToast = (message) => {
+    if (!contactToast) return;
+    window.clearTimeout(contactToastTimer);
+    contactToast.textContent = message;
+    contactToast.classList.add('is-visible');
+    contactToastTimer = window.setTimeout(() => contactToast.classList.remove('is-visible'), 2200);
+  };
+  const copyWechatId = async () => {
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText('Earthide');
+      copied = true;
+    } catch (error) {
+      const input = document.createElement('textarea');
+      input.value = 'Earthide';
+      input.setAttribute('readonly', '');
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      try { copied = document.execCommand('copy'); } catch (copyError) {}
+      input.remove();
+    }
+    showContactToast(copied ? '微信号 Earthide 已复制成功' : '微信号：Earthide');
+  };
+  document.querySelector('[data-contact-wechat]')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    openContactModal('wechat');
+    copyWechatId();
+  });
+  document.querySelector('[data-contact-pdf]')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    openContactModal('pdf');
+  });
+  document.querySelectorAll('[data-contact-close]').forEach((button) => {
+    button.addEventListener('click', closeContactModals);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && document.body.classList.contains('contact-modal-open')) closeContactModals();
+  });
+
   const gallery = document.querySelector('[data-work-gallery]');
   const galleryModal = document.querySelector('[data-gallery-modal]');
   const galleryModalImg = document.querySelector('[data-gallery-modal-img]');
@@ -1141,6 +1235,12 @@
     applyGalleryViewerTransform();
   };
   if (galleryModalWindow && galleryModalImg) {
+    galleryModalImg.decoding = 'sync';
+    galleryModalImg.addEventListener('load', () => {
+      const decoded = galleryModalImg.decode?.();
+      if (decoded?.catch) decoded.catch(() => {});
+      galleryModal?.classList.remove('is-image-loading');
+    });
     galleryModalWindow.classList.add('is-zoom-viewer');
     galleryViewer = document.createElement('div');
     galleryViewer.className = 'work-image-viewer';
@@ -1224,6 +1324,7 @@
   const openGalleryModal = (button) => {
     if (!galleryModal || !galleryModalImg) return;
     const img = button.matches?.('img') ? button : button.querySelector('img');
+    galleryModal.classList.add('is-image-loading');
     galleryModalImg.src = button.dataset.galleryImage || img?.src || '';
     galleryModalImg.alt = img?.alt || '';
     resetGalleryViewer();
