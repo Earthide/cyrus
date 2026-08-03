@@ -5,7 +5,7 @@
     loader.className = 'site-loading-overlay';
     loader.setAttribute('role', 'status');
     loader.setAttribute('aria-live', 'polite');
-    loader.innerHTML = '<div class="site-loading-card"><strong>图片加载中...请稍候...</strong><div class="site-loading-track" aria-hidden="true"></div><span>0%</span></div>';
+    loader.innerHTML = '<div class="site-loading-card"><strong>LOADING...<br>正在载入...请稍候...</strong><div class="site-loading-track" aria-hidden="true"></div><span>0%</span></div>';
     document.body.appendChild(loader);
     const loaderLabel = loader.querySelector('span');
     const threshold = Math.max(1, Math.ceil(assetImages.length * .9));
