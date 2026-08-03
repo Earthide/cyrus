@@ -8967,16 +8967,12 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
   animation: playNoteCameraSwap .28s ease;
 }
 
-/* Work 02 trial: softly carry the first image's coral palette into the pale
-   page without changing the seamless lower edge or any following media. */
+/* Work 02 first image keeps a clean edge without the former coral glow. */
 .work-02-page .work-long-image-intro {
   position: relative;
   z-index: 1;
   border-radius: clamp(16px, 1.8vw, 28px) clamp(16px, 1.8vw, 28px) 0 0;
-  box-shadow:
-    0 -26px 66px rgba(230, 136, 105, .2),
-    -20px -4px 46px rgba(244, 171, 139, .12),
-    20px -4px 46px rgba(244, 171, 139, .12);
+  box-shadow: none;
 }
 
 /* Final cross-page maintenance overrides — 2026-08-02. */
@@ -9310,10 +9306,27 @@ body.contact-modal-open {
 }
 
 /* About page follow-up: place Cyrus after the experience timeline. */
+.reference-about {
+  position: relative;
+}
+
 .reference-about > .about-octopus {
-  margin-top: clamp(24px, 4vh, 44px);
-  margin-right: 0;
-  margin-left: auto;
+  position: absolute;
+  right: 0;
+  bottom: clamp(58px, 7vh, 84px);
+  margin: 0;
+}
+
+@media (max-width: 620px) {
+  .reference-about > .about-octopus {
+    bottom: 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .reference-about > .about-octopus {
+    bottom: 48px;
+  }
 }
 
 /* Keep EN / 中文 / sun / moon on one exact baseline at every breakpoint. */
@@ -9758,6 +9771,61 @@ body.reference-about-page::before {
   font-size: 15px;
 }
 
+/* This project keeps its original image and typography without hover glow. */
+.works-grid .zheyoushan-card:hover {
+  filter: none;
+}
+
+.works-grid .zheyoushan-card:hover .blue-placeholder,
+.works-grid .zheyoushan-card:hover .blue-placeholder.work-thumb {
+  box-shadow: none;
+  filter: none;
+}
+
+.works-grid .zheyoushan-card:hover h2,
+.works-grid .zheyoushan-card:hover p {
+  text-shadow: none;
+}
+
+.reference-about .about-copy p {
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.reference-about .about-copy p strong {
+  font-weight: 800;
+}
+
+.reference-about .about-hero-grid {
+  align-items: start;
+}
+
+.reference-about .about-copy {
+  transform: translateY(-3px);
+}
+
+.reference-about .about-copy h1 {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.reference-about .about-copy h1 small {
+  display: inline;
+  margin-top: 0;
+}
+
+.reference-about .about-timeline {
+  margin-top: clamp(54px, 6vh, 72px);
+}
+
+@media (max-width: 620px) {
+  .reference-about .about-timeline {
+    margin-top: 40px;
+  }
+}
+
 /* Mobile title glass stops above the separate menu control. */
 @media (max-width: 600px) {
   .desktop-bar,
@@ -9795,5 +9863,397 @@ body.reference-about-page::before {
   .reference-header::before {
     top: -15px;
     height: 63px;
+  }
+}
+
+/* About resources: skills, contact shortcuts and Cyrus share one visual row. */
+.reference-about .about-resource-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, auto) minmax(116px, 150px);
+  gap: clamp(24px, 3vw, 48px);
+  align-items: center;
+  margin-top: clamp(54px, 7vh, 82px);
+}
+
+.reference-about .about-resource-row .about-skills {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.reference-about .about-contact-icons {
+  justify-content: center;
+  align-items: start;
+  gap: clamp(20px, 2.2vw, 38px);
+  margin: 0;
+}
+
+.reference-about .about-resource-row .about-octopus {
+  position: static;
+  width: clamp(108px, 9vw, 138px);
+  margin: 0;
+  justify-self: end;
+  align-self: center;
+}
+
+.reference-about .about-contact-group {
+  display: contents;
+}
+
+.reference-about .about-resource-row + .about-timeline {
+  margin-top: clamp(46px, 5vh, 64px);
+}
+
+@media (max-width: 1040px) {
+  .reference-about .about-resource-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px 24px;
+    margin-top: 44px;
+  }
+
+  .reference-about .about-resource-row .about-skills {
+    grid-column: 1 / -1;
+  }
+
+  .reference-about .about-contact-icons {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .reference-about .about-resource-row {
+    grid-template-columns: minmax(0, 1fr) 92px;
+    gap: 24px 14px;
+    margin-top: 36px;
+  }
+
+  .reference-about .about-contact-icons {
+    gap: clamp(10px, 3vw, 20px);
+    min-width: 0;
+  }
+
+  .reference-about .about-contact-icons a {
+    min-width: 0;
+  }
+
+  .reference-about .about-contact-icons small {
+    font-size: 10px;
+  }
+
+  .reference-about .about-resource-row .about-octopus {
+    width: 92px;
+  }
+
+  .reference-about .about-resource-row + .about-timeline {
+    margin-top: 38px;
+  }
+}
+
+/* The experience row now sits before the skills/contact/Cyrus row. */
+.reference-about .about-hero-grid + .about-timeline {
+  width: 100%;
+  max-width: none;
+  margin-top: clamp(46px, 5vh, 64px);
+}
+
+.reference-about .about-timeline + .about-resource-row {
+  margin-top: clamp(46px, 5vh, 64px);
+}
+
+.reference-about .about-timeline span {
+  font-size: 14px;
+}
+
+.reference-about .about-timeline-title {
+  grid-column: 1 / -1;
+  color: #315cff;
+  font-size: 17px;
+  line-height: 1.2;
+  text-align: left;
+}
+
+@media (max-width: 620px) {
+  .reference-about .about-hero-grid + .about-timeline {
+    position: relative;
+    width: min(100%, 360px);
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 38px;
+    box-sizing: border-box;
+    text-align: left;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: rgba(49, 92, 255, .38);
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span {
+    position: relative;
+    text-align: left;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span::before {
+    content: "";
+    position: absolute;
+    left: -32px;
+    top: 5px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid #315cff;
+    background: #fff;
+    box-shadow: 3px 3px 0 rgba(49, 92, 255, .14);
+    box-sizing: border-box;
+  }
+}
+
+/* Centered segmented timeline on narrow screens. */
+@media (max-width: 620px) {
+  .reference-about {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reference-about > .path-button {
+    align-self: flex-start;
+  }
+
+  .reference-about > .about-hero-grid {
+    order: 1;
+  }
+
+  .reference-about > .about-resource-row {
+    display: contents;
+  }
+
+  .reference-about > .about-timeline {
+    order: 2;
+  }
+
+  .reference-about .about-resource-row > .about-skills {
+    order: 3;
+    margin-top: 14px;
+  }
+
+  .reference-about .about-contact-group {
+    order: 4;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 92px;
+    gap: 14px;
+    align-items: center;
+    width: 100%;
+    margin-top: 26px;
+  }
+
+  .reference-about .about-contact-group .about-contact-icons {
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  .reference-about .about-contact-group .about-octopus {
+    position: static;
+    width: 92px;
+    margin: 0;
+    justify-self: end;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline {
+    gap: 8px;
+    margin-top: 28px;
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline::before {
+    content: none;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span {
+    padding-top: 45px;
+    text-align: center;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    width: 2px;
+    height: 31px;
+    border: 0;
+    border-radius: 0;
+    background: #315cff;
+    box-shadow: none;
+    transform: translateX(-50%);
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #315cff;
+    box-shadow: 0 31px 0 #315cff;
+    transform: translateX(-50%);
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span:first-of-type {
+    padding-top: 0;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span:first-of-type::before,
+  .reference-about .about-hero-grid + .about-timeline span:first-of-type::after {
+    content: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .reference-about .about-hero-grid + .about-timeline {
+    width: 100%;
+  }
+
+  .reference-about .about-timeline-title {
+    width: 100%;
+    padding-left: 16px;
+    box-sizing: border-box;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span {
+    width: min(100%, 360px);
+    justify-self: center;
+  }
+}
+
+.reference-about .timeline-link {
+  display: none;
+}
+
+/* Narrow timeline follows a text-line-text path and turns back on row two. */
+@media (max-width: 620px) {
+  .reference-about .about-hero-grid + .about-timeline {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr) clamp(34px, 9vw, 58px)
+      minmax(0, 1fr) clamp(34px, 9vw, 58px)
+      minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 58px 7px;
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+
+  .reference-about .about-timeline-title {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    padding-left: 4px;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span {
+    position: relative;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    font-size: clamp(11px, 2.3vw, 14px);
+    white-space: nowrap;
+    align-self: center;
+    justify-self: stretch;
+    text-align: center;
+    z-index: 2;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span::before,
+  .reference-about .about-hero-grid + .about-timeline span::after {
+    content: none;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span:nth-of-type(1) { grid-column: 1; grid-row: 2; }
+  .reference-about .about-hero-grid + .about-timeline span:nth-of-type(2) { grid-column: 3; grid-row: 2; }
+  .reference-about .about-hero-grid + .about-timeline span:nth-of-type(3) { grid-column: 5; grid-row: 2; }
+  .reference-about .about-hero-grid + .about-timeline span:nth-of-type(4) { grid-column: 3; grid-row: 3; }
+  .reference-about .about-hero-grid + .about-timeline span:nth-of-type(5) { grid-column: 1; grid-row: 3; }
+
+  .reference-about .timeline-link {
+    display: block;
+    position: relative;
+    align-self: center;
+    height: 2px;
+    background: #315cff;
+    z-index: 1;
+  }
+
+  .reference-about .timeline-link-one { grid-column: 2; grid-row: 2; }
+  .reference-about .timeline-link-two { grid-column: 4; grid-row: 2; }
+  .reference-about .timeline-link-three { grid-column: 2; grid-row: 3; }
+
+  .reference-about .timeline-link-one::before,
+  .reference-about .timeline-link-two::before,
+  .reference-about .timeline-link-three::before,
+  .reference-about .timeline-link-one::after,
+  .reference-about .timeline-link-two::after,
+  .reference-about .timeline-link-three::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #315cff;
+    transform: translateY(-50%);
+  }
+
+  .reference-about .timeline-link-one::before,
+  .reference-about .timeline-link-two::before,
+  .reference-about .timeline-link-three::before { left: -1px; }
+
+  .reference-about .timeline-link-one::after,
+  .reference-about .timeline-link-two::after,
+  .reference-about .timeline-link-three::after { right: -1px; }
+
+  .reference-about .timeline-link-turn {
+    display: block;
+    grid-column: 4 / 6;
+    grid-row: 2 / 4;
+    align-self: stretch;
+    justify-self: center;
+    width: clamp(64px, 14vw, 88px);
+    height: auto;
+    margin: 20px 0;
+    border-right: 2px solid #315cff;
+    border-bottom: 2px solid #315cff;
+    background: transparent;
+  }
+
+  .reference-about .timeline-link-turn::before,
+  .reference-about .timeline-link-turn::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #315cff;
+  }
+
+  .reference-about .timeline-link-turn::before {
+    top: -3px;
+    right: -5px;
+  }
+
+  .reference-about .timeline-link-turn::after {
+    left: -4px;
+    bottom: -5px;
   }
 }
