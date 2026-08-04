@@ -10302,3 +10302,25 @@ body.reference-about-page::before {
     row-gap: 12px;
   }
 }
+
+/* Phone-width snake timeline must fit without horizontal overflow. */
+@media (max-width: 480px) {
+  .reference-about .about-hero-grid + .about-timeline {
+    grid-template-columns:
+      minmax(0, 1fr) 12px
+      minmax(0, 1fr) 12px
+      minmax(0, 1fr);
+    column-gap: 4px;
+    max-width: 100%;
+    padding: 0 6px;
+    overflow: hidden;
+  }
+
+  .reference-about .about-hero-grid + .about-timeline span {
+    font-size: clamp(9px, 2.35vw, 10.5px);
+  }
+
+  .reference-about .timeline-link-turn {
+    margin-right: -4px;
+  }
+}
