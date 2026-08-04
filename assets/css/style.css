@@ -9080,7 +9080,7 @@ body:not(.desktop-page) { background: #fff; overflow-x: hidden; }
 
 .site-loading-card strong {
   margin-bottom: 14px;
-  font-size: 18px;
+  font: 800 13px/1.7 "Geely Design Type", "Microsoft YaHei", sans-serif;
 }
 
 .site-loading-track {
