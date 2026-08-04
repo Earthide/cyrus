@@ -10312,7 +10312,7 @@ body.reference-about-page::before {
       minmax(0, 1fr);
     column-gap: 4px;
     max-width: 100%;
-    padding: 0 6px;
+    padding: 0;
     overflow: hidden;
   }
 
@@ -10321,6 +10321,6 @@ body.reference-about-page::before {
   }
 
   .reference-about .timeline-link-turn {
-    margin-right: -4px;
+    margin-right: 4px;
   }
 }
